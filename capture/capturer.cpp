@@ -12,6 +12,7 @@ Capturer::Capturer(const QRect& captureRect, const int fps, QObject* parent):
 void Capturer::startCapture()
 {
     m_timer.start();
+    m_lastCaptureTick = m_timer.elapsed();
     emit keepProcess();
 }
 void Capturer::endCapture()

@@ -91,7 +91,7 @@ FileImageStore::FileImageStore(QTemporaryFile* file,
     }
 }
 
-std::optional<ImageFrame> FileImageStore::at(size_t i)
+std::optional<ImageFrame> FileImageStore::at(size_t i) const
 {
     if(i < m_frames.size())
     {
@@ -100,7 +100,7 @@ std::optional<ImageFrame> FileImageStore::at(size_t i)
     return std::nullopt;
 }
 
-QImage FileImageStore::getImage(const ImageFrame &frame)
+QImage FileImageStore::getImage(const ImageFrame &frame) const
 {
     if(&frame.m_imageStore == this)
     {
@@ -112,7 +112,9 @@ QImage FileImageStore::getImage(const ImageFrame &frame)
         QImage img(data,
                    m_imgSize.width(),
                    m_imgSize.height(),
-                   m_pixelformats[frame.m_formatIndex]);
+                   m_pixelformats[frame.m_formatIndex],
+                FileImageStore::FreeImage,
+                data);
 
         if(img.isNull())
         {
@@ -123,7 +125,14 @@ QImage FileImageStore::getImage(const ImageFrame &frame)
     return QImage();
 }
 
-size_t FileImageStore::size()
+size_t FileImageStore::size() const
 {
     return m_frames.size();
+}
+
+void FileImageStore::FreeImage(void *ptr)
+{
+
+    qDebug()<<ptr<<"is free";
+    free(ptr);
 }

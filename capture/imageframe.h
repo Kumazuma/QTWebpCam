@@ -7,13 +7,17 @@ class ImageFrame
 {
     friend class FileImageStore;
 public:
+    ImageFrame():
+    m_imageStore(*(FileImageStore*)nullptr){
 
-    size_t duration(){return m_duration;}
-    QSize size(){return m_imgSize;}
-    size_t width(){return m_imgSize.width();}
-    size_t height(){return m_imgSize.height();}
-    size_t sizeInBytes(){return m_size;}
+    }
+    size_t duration() const{return m_duration;}
+    QSize size() const{return m_imgSize;}
+    size_t width() const{return m_imgSize.width();}
+    size_t height() const{return m_imgSize.height();}
+    size_t sizeInBytes() const{return m_size;}
 private:
+
     ImageFrame(
             FileImageStore& imageStore,
             size_t offset,
@@ -29,5 +33,5 @@ private:
     QSize m_imgSize;
     size_t m_duration;
 };
-
+Q_DECLARE_METATYPE(ImageFrame)
 #endif // IMAGEFRAME_H

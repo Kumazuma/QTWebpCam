@@ -20,7 +20,9 @@ SOURCES += \
     capture/fileimagestore.cpp \
     capture/imageframe.cpp \
     capturepreviewwindow.cpp \
+    edit/editpresenter.cpp \
     edit/editwindow.cpp \
+    edit/imageframemodel.cpp \
     main.cpp \
     ./capture/mainwindow.cpp \
     ./capture/presenter.cpp \
@@ -31,7 +33,9 @@ HEADERS += \
     capture/fileimagestore.h \
     capture/imageframe.h \
     capturepreviewwindow.h \
+    edit/editpresenter.h \
     edit/editwindow.h \
+    edit/imageframemodel.h \
     mainwindow.h \
     ./capture/presenter.h
 

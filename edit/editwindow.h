@@ -11,13 +11,15 @@ class EditWindow : public QMainWindow
 {
     Q_OBJECT
 private:
+    Ui::EditWindow *ui;
     FileImageStore * m_store;
+protected slots:
+    void selectFrame(const ImageFrame&  frame);
 public:
     explicit EditWindow(FileImageStore* store, QWidget *parent = nullptr);
     ~EditWindow();
 
-private:
-    Ui::EditWindow *ui;
+
 };
 
 #endif // EDITWINDOW_H

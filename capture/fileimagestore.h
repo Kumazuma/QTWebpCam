@@ -26,10 +26,12 @@ public:
                             std::vector<QImage::Format> && pixelformats,
                             QObject *parent = nullptr);
     FileImageStore* buildStore(QObject* parent = nullptr);
-    std::optional<ImageFrame> at(size_t i);
-    QImage getImage(const ImageFrame& frame);
-    size_t size();
+    std::optional<ImageFrame> at(size_t i) const;
+    QImage getImage(const ImageFrame& frame) const;
+    size_t size() const;
     QSize imageSize();
+protected:
+    static void FreeImage(void* ptr);
 };
 
 class FileImageStoreBuilder : public QObject

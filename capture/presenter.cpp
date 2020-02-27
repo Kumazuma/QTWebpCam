@@ -51,6 +51,7 @@ void Presenter::startCapture()
     QObject::connect(m_capture, &Capturer::finished, this, &Presenter::onExitThread);
     m_timer->start(2);
     m_thread.start();
+
 }
 
 void Presenter::stopCapture()
