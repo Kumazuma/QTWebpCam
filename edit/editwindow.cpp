@@ -6,7 +6,7 @@
 #include "capturepreviewwindow.h"
 #include "imageframemodel.h"
 #include <QFileDialog>
-
+#include "encodingprogressdialog.h"
 EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::EditWindow),
@@ -80,11 +80,9 @@ void EditWindow::currentSelect(const QModelIndex &index, const QModelIndex &)
 
 void EditWindow::save(bool )
 {
-    QString filePath =QFileDialog::getSaveFileName(this,
-            tr("Save Anim Webp File"), "",
-            tr("Webp file (*.webp);;"));
-    if(filePath.isEmpty())
-        return;
-    m_presenter->saveAnimWebp(filePath);
+    auto dialog = new EncodingProgressDialog(*m_presenter, this);
+   // dialog->show();
+    dialog->exec();
+    delete dialog;
 }
 

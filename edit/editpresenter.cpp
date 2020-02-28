@@ -15,7 +15,7 @@ EditPresenter::~EditPresenter()
 {
     if(m_thread != nullptr)
     {
-        m_thread->quit();
+        m_thread->requestInterruption();
         m_thread->wait();
         delete m_thread;
         m_thread = nullptr;
@@ -53,12 +53,22 @@ void EditPresenter::saveAnimWebp(const QString& filePath)
     if(m_thread != nullptr)
         return;
     m_model.setFilePath(filePath);
-    m_encoder = new WebpEncoder(m_model.store()->imageSize());
-    QObject::connect(m_encoder, &WebpEncoder::doneAFrame, this, &EditPresenter::doneAFrame);
-    QObject::connect(m_encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
+    m_encoder = new WebpEncoder(m_model.store()->imageSize(), this);
+
+
     m_thread = new EncodingThread(*m_encoder, *m_model.store(),this);
+    QObject::connect((EncodingThread*)m_thread, &EncodingThread::progress, this, &EditPresenter::progressEncode);
+    QObject::connect(m_encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
     m_thread->start();
 
+}
+
+void EditPresenter::cancelEncode()
+{
+    m_thread->requestInterruption();
+    m_thread->wait();
+    delete m_thread;
+    m_thread = nullptr;
 }
 
 void EditPresenter::play()
@@ -106,9 +116,9 @@ void EditPresenter::timer()
     m_leftDuration -= delta;
 }
 
-void EditPresenter::doneAFrame(int current)
+void EditPresenter::progress(int current, int size)
 {
-
+    emit progressEncode(current, size);
 }
 
 void EditPresenter::finishEncode()
@@ -121,12 +131,7 @@ void EditPresenter::finishEncode()
     QFile file(m_model.filePath());
     file.open(QFile::ReadWrite);
     m_encoder->result(file);
-    emit completeFileSave(m_model.filePath());
-    delete m_encoder;
+    m_encoder->deleteLater();
     m_encoder = nullptr;
-}
-
-void EditPresenter::threadRun()
-{
-
+    emit completeFileSave(m_model.filePath());
 }

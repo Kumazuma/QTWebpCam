@@ -26,9 +26,7 @@ public slots:
     void process();
     void stop();
 signals:
-    void requstStart();
     void finished();
-    void keepProcess();
-    void takeImage(QImage img, uint64_t duration);
+    void takeImage(QImage img, int duration);
 };
 #endif // CAPTURER_H

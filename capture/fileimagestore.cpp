@@ -1,8 +1,7 @@
 #include "fileimagestore.h"
 #include "imageframe.h"
 FileImageStoreBuilder::FileImageStoreBuilder(QSize imgSize, QObject *parent) :
-    QObject(parent),
-    m_tempFile(new QTemporaryFile(this)),
+    m_tempFile(new QTemporaryFile(parent)),
     m_imgSize(imgSize)
 {
     if(!m_tempFile->open())
@@ -20,7 +19,7 @@ FileImageStore *FileImageStoreBuilder::buildStore(QObject *parent)
                               parent);
 }
 
-void FileImageStoreBuilder::pushBack(QImage image, uint64_t duration)
+void FileImageStoreBuilder::pushBack(QImage image, int duration)
 {
     auto * data =  image.bits();
     auto len = image.sizeInBytes();

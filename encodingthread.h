@@ -12,7 +12,13 @@ private:
     FileImageStore & m_storage;
 public:
     EncodingThread(WebpEncoder& encoder, FileImageStore & storage, QObject* parent = nullptr);
+    void stopEncode();
 protected:
     void run() override;
+
+protected slots:
+
+signals:
+    void progress(int value, int total);
 };
 #endif // ENCODINGTHREAD_H

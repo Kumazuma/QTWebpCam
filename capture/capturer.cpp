@@ -13,7 +13,6 @@ void Capturer::startCapture()
 {
     m_timer.start();
     m_lastCaptureTick = m_timer.elapsed();
-    emit keepProcess();
 }
 void Capturer::endCapture()
 {
@@ -22,7 +21,6 @@ void Capturer::endCapture()
 
 QPixmap Capturer::capture()
 {
-    auto& rect = m_captureRect;
     QDesktopWidget desktop;
 
     return QPixmap::grabWindow(desktop.winId(),
@@ -44,11 +42,7 @@ void Capturer::process()
         auto img = res.toImage();
         emit takeImage(img,delta);
     }
-    if(m_isKeepGoing)
-    {
-        emit keepProcess();
-    }
-    else
+    if(!m_isKeepGoing)
     {
         emit finished();
     }

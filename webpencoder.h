@@ -11,12 +11,12 @@ class WebpEncoder : public QObject
     Q_OBJECT
 
 private:
-    WebPAnimEncoder* m_encoder;
+    WebPAnimEncoder* m_encoder = nullptr;
     WebPAnimEncoderOptions m_encoderOption;
     WebPConfig m_config;
     WebPPicture m_frame;
     WebPData m_webpData;
-    WebPMux* m_webpMux;
+    WebPMux* m_webpMux = nullptr;
     size_t m_timestamp;
     QSize m_imgSize;
     size_t m_count;

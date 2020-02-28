@@ -50,10 +50,8 @@ public:
     explicit FileImageStoreBuilder(QSize imgSize, QObject *parent = nullptr);
     FileImageStore* buildStore(QObject* parent = nullptr);
 public slots:
-    void pushBack(QImage pixmap, uint64_t duration);
-private:
+    void pushBack(QImage pixmap, int duration);
 
-signals:
 
 };
 

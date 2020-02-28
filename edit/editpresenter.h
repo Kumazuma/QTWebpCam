@@ -28,15 +28,16 @@ public:
     std::optional<size_t> currentFrameIndex();
     bool isPlaying();
     void saveAnimWebp(const QString& filePath);
+    void cancelEncode();
 public slots:
     void play();
     void stop();
 protected slots:
     void timer();
-    void doneAFrame(int current);
+    void progress(int current, int size);
     void finishEncode();
-    void threadRun();
 signals:
+    void progressEncode(int current, int size);
     void currentImageFrame(ImageFrame frame);
     void changePlayState(bool state);
     void completeFileSave(QString path);

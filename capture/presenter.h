@@ -17,7 +17,6 @@ private:
     FileImageStoreBuilder * m_builder = nullptr;
     QTimer * m_timer = nullptr;
     QThread m_thread;
-
 public:
     explicit Presenter(QObject * parent = nullptr);
     ~Presenter();

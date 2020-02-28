@@ -30,9 +30,18 @@ WebpEncoder::WebpEncoder(const QSize& imgSize, QObject *parent) :
 WebpEncoder::~WebpEncoder()
 {
     WebPDataClear(&m_webpData);
-    WebPMuxDelete(m_webpMux);
+    if(m_webpMux != nullptr)
+    {
+        WebPMuxDelete(m_webpMux);
+        m_webpMux = nullptr;
+    }
+    if(m_encoder != nullptr)
+    {
+        WebPAnimEncoderDelete(m_encoder);
+        m_encoder = nullptr;
+    }
     WebPPictureFree(&m_frame);
-    WebPAnimEncoderDelete(m_encoder);
+
 }
 
 void WebpEncoder::result(QIODevice &device)
@@ -68,8 +77,8 @@ void WebpEncoder::end()
     WebPAnimEncoderAdd(m_encoder, nullptr, m_timestamp, nullptr);
     WebPAnimEncoderAssemble(m_encoder, &m_webpData);
 
-    auto webpMux = WebPMuxCreate(&m_webpData, 1);
+    m_webpMux = WebPMuxCreate(&m_webpData, 1);
     WebPDataClear(&m_webpData);
-    WebPMuxAssemble(webpMux, &m_webpData);
+    WebPMuxAssemble(m_webpMux, &m_webpData);
     emit finish();
 }
