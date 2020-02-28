@@ -1,5 +1,6 @@
 #include "editpresenter.h"
-#include <QtConcurrent>
+#include "../encodingthread.h"
+
 EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
     QObject(parent),
     m_model(store),
@@ -12,8 +13,13 @@ EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
 
 EditPresenter::~EditPresenter()
 {
-    m_future.cancel();
-    m_future.waitForFinished();
+    if(m_thread != nullptr)
+    {
+        m_thread->quit();
+        m_thread->wait();
+        delete m_thread;
+        m_thread = nullptr;
+    }
 }
 
 void EditPresenter::setCurrentImageFrame(const ImageFrame& frame)
@@ -44,24 +50,14 @@ bool EditPresenter::isPlaying()
 
 void EditPresenter::saveAnimWebp(const QString& filePath)
 {
+    if(m_thread != nullptr)
+        return;
     m_model.setFilePath(filePath);
-    WebpEncoder* encoder = new WebpEncoder(m_model.store()->imageSize());
-    QObject::connect(encoder, &WebpEncoder::doneAFrame, this, &EditPresenter::doneAFrame);
-    QObject::connect(encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
-
-    auto f = [this](WebpEncoder* encoder)->WebpEncoder*
-    {
-        auto store = this->m_model.store();
-        for(size_t i = 0; i < store->size(); i++)
-        {
-            auto frame = *store->at(i);
-            QImage img = store->getImage(frame);
-            encoder->putFrame(img, frame.duration());
-        }
-        encoder->end();
-        return encoder;
-    };
-    m_future = QtConcurrent::run(f, encoder);
+    m_encoder = new WebpEncoder(m_model.store()->imageSize());
+    QObject::connect(m_encoder, &WebpEncoder::doneAFrame, this, &EditPresenter::doneAFrame);
+    QObject::connect(m_encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
+    m_thread = new EncodingThread(*m_encoder, *m_model.store(),this);
+    m_thread->start();
 
 }
 
@@ -117,13 +113,17 @@ void EditPresenter::doneAFrame(int current)
 
 void EditPresenter::finishEncode()
 {
-    m_future.waitForFinished();
-    auto encoder = m_future.result();
+    m_thread->quit();
+    m_thread->wait();
+    delete m_thread;
+    m_thread = nullptr;
+
     QFile file(m_model.filePath());
     file.open(QFile::ReadWrite);
-    encoder->result(file);
+    m_encoder->result(file);
     emit completeFileSave(m_model.filePath());
-    delete encoder;
+    delete m_encoder;
+    m_encoder = nullptr;
 }
 
 void EditPresenter::threadRun()

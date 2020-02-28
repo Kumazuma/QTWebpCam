@@ -17,8 +17,8 @@ private:
     int m_leftDuration = 0;
     int m_encodingNext = 0;
     qint64 m_lastTick = 0;
-    QFuture<WebpEncoder*> m_future;
-    QThread m_thread;
+    WebpEncoder * m_encoder;
+    QThread* m_thread = nullptr;
 public:
     explicit EditPresenter(FileImageStore* store, QObject *parent = nullptr);
     ~EditPresenter();
