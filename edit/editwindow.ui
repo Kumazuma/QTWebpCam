@@ -62,6 +62,7 @@
    <addaction name="actionPlay"/>
    <addaction name="actionDelete"/>
    <addaction name="actionResize"/>
+   <addaction name="actionSave"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <attribute name="dockWidgetArea">
@@ -134,6 +135,15 @@
    </property>
    <property name="text">
     <string>리자이즈</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/save.svg</normaloff>:/resource/save.svg</iconset>
+   </property>
+   <property name="text">
+    <string>저장</string>
    </property>
   </action>
  </widget>

@@ -18,6 +18,7 @@ protected slots:
     void selectFrame(const ImageFrame&  frame);
     void playState(bool state);
     void currentSelect(const QModelIndex &index, const QModelIndex &);
+    void save(bool);
 public:
     explicit EditWindow(FileImageStore* store, QWidget *parent = nullptr);
     ~EditWindow();

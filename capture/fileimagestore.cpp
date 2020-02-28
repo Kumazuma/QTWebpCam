@@ -130,6 +130,11 @@ size_t FileImageStore::size() const
     return m_frames.size();
 }
 
+QSize FileImageStore::imageSize()
+{
+    return m_imgSize;
+}
+
 std::optional<size_t> FileImageStore::findIndex(const ImageFrame & frame)
 {
     if(&frame.m_imageStore != this)

@@ -1,5 +1,5 @@
 #include "editpresenter.h"
-
+#include <QtConcurrent>
 EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
     QObject(parent),
     m_model(store),
@@ -8,6 +8,12 @@ EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
 {
     store->setParent(this);
     connect(&m_timer, &QTimer::timeout, this, &EditPresenter::timer);
+}
+
+EditPresenter::~EditPresenter()
+{
+    m_future.cancel();
+    m_future.waitForFinished();
 }
 
 void EditPresenter::setCurrentImageFrame(const ImageFrame& frame)
@@ -34,6 +40,29 @@ std::optional<size_t> EditPresenter::currentFrameIndex()
 bool EditPresenter::isPlaying()
 {
     return m_model.isPlay();
+}
+
+void EditPresenter::saveAnimWebp(const QString& filePath)
+{
+    m_model.setFilePath(filePath);
+    WebpEncoder* encoder = new WebpEncoder(m_model.store()->imageSize());
+    QObject::connect(encoder, &WebpEncoder::doneAFrame, this, &EditPresenter::doneAFrame);
+    QObject::connect(encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
+
+    auto f = [this](WebpEncoder* encoder)->WebpEncoder*
+    {
+        auto store = this->m_model.store();
+        for(size_t i = 0; i < store->size(); i++)
+        {
+            auto frame = *store->at(i);
+            QImage img = store->getImage(frame);
+            encoder->putFrame(img, frame.duration());
+        }
+        encoder->end();
+        return encoder;
+    };
+    m_future = QtConcurrent::run(f, encoder);
+
 }
 
 void EditPresenter::play()
@@ -79,4 +108,25 @@ void EditPresenter::timer()
     }
     emit currentImageFrame(*m_model.store()->at(index));
     m_leftDuration -= delta;
+}
+
+void EditPresenter::doneAFrame(int current)
+{
+
+}
+
+void EditPresenter::finishEncode()
+{
+    m_future.waitForFinished();
+    auto encoder = m_future.result();
+    QFile file(m_model.filePath());
+    file.open(QFile::ReadWrite);
+    encoder->result(file);
+    emit completeFileSave(m_model.filePath());
+    delete encoder;
+}
+
+void EditPresenter::threadRun()
+{
+
 }

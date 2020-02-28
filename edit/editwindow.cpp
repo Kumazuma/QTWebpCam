@@ -5,7 +5,7 @@
 #include <QGraphicsPixmapItem>
 #include "capturepreviewwindow.h"
 #include "imageframemodel.h"
-
+#include <QFileDialog>
 
 EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     QMainWindow(parent),
@@ -21,6 +21,8 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     auto selectionModel = ui->listView->selectionModel();
     connect(m_presenter, &EditPresenter::currentImageFrame, this, &EditWindow::selectFrame);
     connect(m_presenter, &EditPresenter::changePlayState, this, &EditWindow::playState);
+
+    connect(ui->actionSave, &QAction::triggered, this, &EditWindow::save);
     connect(ui->actionPlay, &QAction::changed, [this]()
     {
         if(ui->actionPlay->isChecked())
@@ -74,5 +76,15 @@ void EditWindow::playState(bool state)
 void EditWindow::currentSelect(const QModelIndex &index, const QModelIndex &)
 {
 
+}
+
+void EditWindow::save(bool )
+{
+    QString filePath =QFileDialog::getSaveFileName(this,
+            tr("Save Anim Webp File"), "",
+            tr("Webp file (*.webp);;"));
+    if(filePath.isEmpty())
+        return;
+    m_presenter->saveAnimWebp(filePath);
 }
 

@@ -3,5 +3,6 @@
         <file>play-button.svg</file>
         <file>quit.svg</file>
         <file>expand.svg</file>
+        <file>save.svg</file>
     </qresource>
 </RCC>
