@@ -20,6 +20,7 @@ SOURCES += \
     capture/fileimagestore.cpp \
     capture/imageframe.cpp \
     capturepreviewwindow.cpp \
+    edit/editmodel.cpp \
     edit/editpresenter.cpp \
     edit/editwindow.cpp \
     edit/imageframemodel.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     capture/fileimagestore.h \
     capture/imageframe.h \
     capturepreviewwindow.h \
+    edit/editmodel.h \
     edit/editpresenter.h \
     edit/editwindow.h \
     edit/imageframemodel.h \
@@ -48,3 +50,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource/icons.qrc

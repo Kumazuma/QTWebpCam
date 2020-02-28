@@ -17,11 +17,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->pushButton_3, SIGNAL(released()), this, SLOT(onClickedClose()));
-    connect(this, SIGNAL(posXChanged(int)), ui->spinX, SLOT(setValue(int)));
-    connect(this, SIGNAL(posYChanged(int)), ui->spinY, SLOT(setValue(int)));
     connect(ui->spinWidth, SIGNAL(valueChanged(int)), this, SLOT(onSpinWidthChange(int)));
     connect(ui->spinHeight, SIGNAL(valueChanged(int)), this, SLOT(onSpinHeightChange(int)));
+    connect(ui->spinX, SIGNAL(valueChanged(int)), this, SLOT(onSpinPosXChange(int)));
+    connect(ui->spinY, SIGNAL(valueChanged(int)), this, SLOT(onSpinPosYChange(int)));
     connect(m_presenter, SIGNAL(changedRect(const QRect&)), this, SLOT(onChangedRecoredRect(const QRect)));
+    connect(m_presenter, SIGNAL(startRecord()), this, SLOT(startRecord()));
     connect(m_presenter, SIGNAL(finishRecord(FileImageStore*)), this, SLOT(showEditWindow(FileImageStore*)));
     connect(ui->btnStart, SIGNAL(released()), m_presenter, SLOT(startCapture()));
     connect(ui->btnStop, SIGNAL(released()), m_presenter, SLOT(stopCapture()));
@@ -66,6 +67,8 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void* msg, long *resul
     switch(winMsg.message)
     {
         case WM_NCHITTEST:
+        if(!m_isResizable)
+            break;
         int x = LOWORD(winMsg.lParam);
         int y = HIWORD(winMsg.lParam);
         POINT pt{x,y};
@@ -113,14 +116,6 @@ void MainWindow::onClickedClose()
 {
     this->close();
 }
-#include "capturer.h"
-#include "../capturepreviewwindow.h"
-void MainWindow::onClickStart()
-{
-    Capturer capturer(m_presenter->recoredRect(), m_presenter->fps());
-    CapturePreviewWindow* window = new CapturePreviewWindow(this, capturer.capture().toImage());
-    window->show();
-}
 
 void MainWindow::moveEvent(QMoveEvent *event)
 {
@@ -151,13 +146,21 @@ void MainWindow::onSpinHeightChange(int val)
     winRect.setHeight(rect.height() + gap);
     this->resize(winRect.size());
 }
-void MainWindow::onSpinPosXChanged(int val)
+void MainWindow::onSpinPosXChange(int val)
 {
-
+    auto rect = m_presenter->recoredRect();
+    auto delta = val - rect.x();
+    auto pos = this->pos();
+    pos.setX(pos.x() + delta);
+    this->move(pos);
 }
-void MainWindow::onSpinPosYChanged(int val)
+void MainWindow::onSpinPosYChange(int val)
 {
-
+    auto rect = m_presenter->recoredRect();
+    auto delta = val - rect.y();
+    auto pos = this->pos();
+    pos.setY(pos.y() + delta);
+    this->move(pos);
 }
 
 void MainWindow::onChangedRecoredRect(const QRect &rect)
@@ -178,4 +181,11 @@ void MainWindow::showEditWindow(FileImageStore *store)
     EditWindow * window = new EditWindow(store);
     window->show();
     this->close();
+}
+
+void MainWindow::startRecord()
+{
+    ui->btnStart->setEnabled(false);
+    ui->btnStop->setEnabled(true);
+    m_isResizable = false;
 }

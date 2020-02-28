@@ -61,3 +61,11 @@ QVariant ImageFrameModel::data(const QModelIndex &parent, int role) const
     }
     return QVariant();
 }
+
+Qt::ItemFlags ImageFrameModel::flags(const QModelIndex &) const
+{
+    return
+            Qt::ItemFlag::ItemIsSelectable |
+            Qt::ItemFlag::ItemIsEnabled |
+            Qt::ItemNeverHasChildren;
+}

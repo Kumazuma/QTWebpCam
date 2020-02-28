@@ -13,6 +13,7 @@ class MainWindow : public QMainWindow
 private:
     Ui::MainWindow *ui;
     Presenter* m_presenter;
+    bool m_isResizable = true;
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -24,13 +25,13 @@ protected:
 
 private slots:
     void onClickedClose();
-    void onClickStart();
     void onSpinWidthChange(int val);
     void onSpinHeightChange(int val);
-    void onSpinPosXChanged(int val);
-    void onSpinPosYChanged(int val);
+    void onSpinPosXChange(int val);
+    void onSpinPosYChange(int val);
     void onChangedRecoredRect(const QRect& rect);
     void onFpsChanged(const QString& text);
     void showEditWindow(FileImageStore* store);
+    void startRecord();
 };
 #endif // MAINWINDOW_H

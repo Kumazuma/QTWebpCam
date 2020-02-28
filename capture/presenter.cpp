@@ -8,6 +8,11 @@ Presenter::Presenter(QObject * parent):
 
 Presenter::~Presenter()
 {
+    if(m_thread.isRunning())
+    {
+        m_thread.quit();
+        m_thread.wait();
+    }
 }
 
 QRect Presenter::recoredRect() const
@@ -35,6 +40,10 @@ void Presenter::startCapture()
 {
     if(m_thread.isRunning())
         return;
+    if(m_capture != nullptr)
+        return;
+    emit startRecord();
+
     m_capture = new Capturer(m_model.recoredRect(), m_model.fps(), this);
     m_builder = new FileImageStoreBuilder(m_model.recoredRect().size(), this);
     m_timer = new QTimer(this);
@@ -57,6 +66,7 @@ void Presenter::startCapture()
 void Presenter::stopCapture()
 {
     m_thread.quit();
+    m_thread.wait();
 }
 
 void Presenter::onExitThread()

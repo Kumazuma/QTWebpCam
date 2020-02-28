@@ -10,18 +10,31 @@
 EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::EditWindow),
-    m_store(store)
+    m_presenter(new EditPresenter(store, this))
 {
     //ui->retake->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
     ui->setupUi(this);
-    m_store->setParent(this);
-    auto model = new ImageFrameModel(*m_store,ui->listView);
-    ui->listView->setModel(model);
-    connect(ui->listView, &QTreeView::clicked,[this](const QModelIndex &index){
-        ImageFrame frame = index.data(Qt::UserRole).value<ImageFrame>();
-        selectFrame(frame);
-    });
 
+    auto model = new ImageFrameModel(m_presenter->imageStore(),ui->listView);
+
+    ui->listView->setModel(model);
+    auto selectionModel = ui->listView->selectionModel();
+    connect(m_presenter, &EditPresenter::currentImageFrame, this, &EditWindow::selectFrame);
+    connect(m_presenter, &EditPresenter::changePlayState, this, &EditWindow::playState);
+    connect(ui->actionPlay, &QAction::changed, [this]()
+    {
+        if(ui->actionPlay->isChecked())
+            m_presenter->play();
+        else
+            m_presenter->stop();
+    });
+    connect(selectionModel,
+            &QItemSelectionModel::currentChanged,
+            [this](const QModelIndex &index, const QModelIndex &)
+    {
+        ImageFrame frame = index.data(Qt::UserRole).value<ImageFrame>();
+        m_presenter->setCurrentImageFrame(frame);
+    });
 }
 
 EditWindow::~EditWindow()
@@ -30,10 +43,15 @@ EditWindow::~EditWindow()
 }
 void EditWindow::selectFrame(const ImageFrame& frame)
 {
-    auto img = this->m_store->getImage(frame);
+    auto image = m_presenter->getImageFromImageFrame(frame);
     auto scene = new QGraphicsScene(this->ui->graphicsView);
-    auto pixmap = QPixmap::fromImage(img);
+    auto pixmap = QPixmap::fromImage(image);
     scene->addPixmap(pixmap);
     this->ui->graphicsView->setScene(scene);
+}
+
+void EditWindow::playState(bool state)
+{
+    ui->actionPlay->setChecked(state);
 }
 

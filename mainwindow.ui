@@ -185,14 +185,14 @@
       <item>
        <widget class="QPushButton" name="btnStart">
         <property name="text">
-         <string>시작버튼</string>
+         <string>시작</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnStop">
         <property name="text">
-         <string>PushButton</string>
+         <string>정지</string>
         </property>
        </widget>
       </item>

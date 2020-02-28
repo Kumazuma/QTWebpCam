@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/resource">
+        <file>play-button.svg</file>
+        <file>quit.svg</file>
+        <file>expand.svg</file>
+    </qresource>
+</RCC>

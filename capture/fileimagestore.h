@@ -19,6 +19,9 @@ private:
     std::vector<ImageFrame> m_frames;
     std::vector<QImage::Format> m_pixelformats;
     uint8_t* m_mappedFile;
+    FileImageStore(const FileImageStore&) = delete;
+    FileImageStore(FileImageStore&&) = delete;
+
 public:
     explicit FileImageStore(QTemporaryFile* file,
                             QSize imgSize,
@@ -30,6 +33,7 @@ public:
     QImage getImage(const ImageFrame& frame) const;
     size_t size() const;
     QSize imageSize();
+    std::optional<size_t> findIndex(const ImageFrame&);
 protected:
     static void FreeImage(void* ptr);
 };

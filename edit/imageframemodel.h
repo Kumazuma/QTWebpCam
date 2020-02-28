@@ -15,8 +15,9 @@ public:
     ImageFrameModel(const FileImageStore& store, QObject* parent);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex &parent, int role = Qt::DisplayRole)const  override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
 };
 
 #endif // IMAGEFRAMEMODEL_H

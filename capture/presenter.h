@@ -32,6 +32,7 @@ private:
     void onExitThread();
 signals:
     void changedRect(const QRect& rect);
+    void startRecord();
     void finishRecord(FileImageStore* store);
 };
 

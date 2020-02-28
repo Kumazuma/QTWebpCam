@@ -59,15 +59,21 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionPlay"/>
+   <addaction name="actionDelete"/>
+   <addaction name="actionResize"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QListView" name="listView">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ContiguousSelection</enum>
+       </property>
        <property name="iconSize">
         <size>
          <width>64</width>
@@ -81,7 +87,7 @@
   </widget>
   <widget class="QDockWidget" name="dockWidget_3">
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -97,7 +103,42 @@
     </layout>
    </widget>
   </widget>
+  <action name="actionPlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/play-button.svg</normaloff>:/resource/play-button.svg</iconset>
+   </property>
+   <property name="text">
+    <string>재생</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/quit.svg</normaloff>:/resource/quit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>삭제</string>
+   </property>
+  </action>
+  <action name="actionResize">
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/expand.svg</normaloff>:/resource/expand.svg</iconset>
+   </property>
+   <property name="text">
+    <string>리자이즈</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../resource/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

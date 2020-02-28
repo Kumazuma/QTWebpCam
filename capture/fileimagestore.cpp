@@ -130,9 +130,22 @@ size_t FileImageStore::size() const
     return m_frames.size();
 }
 
+std::optional<size_t> FileImageStore::findIndex(const ImageFrame & frame)
+{
+    if(&frame.m_imageStore != this)
+        return std::nullopt;
+    for(size_t i = 0; i < m_frames.size(); i++)
+    {
+        auto& it = m_frames[i];
+        if(it.m_offset == frame.m_offset)
+        {
+            return std::optional(i);
+        }
+    }
+    return std::nullopt;
+}
+
 void FileImageStore::FreeImage(void *ptr)
 {
-
-    qDebug()<<ptr<<"is free";
     free(ptr);
 }
