@@ -32,8 +32,13 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
             &QItemSelectionModel::currentChanged,
             [this](const QModelIndex &index, const QModelIndex &)
     {
-        ImageFrame frame = index.data(Qt::UserRole).value<ImageFrame>();
-        m_presenter->setCurrentImageFrame(frame);
+        if(!m_presenter->isPlaying())
+        {
+            ImageFrame frame = index.data(Qt::UserRole).value<ImageFrame>();
+            auto row = *m_presenter->currentFrameIndex();
+            if(row != index.row())
+                m_presenter->setCurrentImageFrame(frame);
+        }
     });
 }
 
@@ -43,6 +48,17 @@ EditWindow::~EditWindow()
 }
 void EditWindow::selectFrame(const ImageFrame& frame)
 {
+    auto index = ui->listView->model()->index(*m_presenter->currentFrameIndex() ,0);
+    auto selectionModel = ui->listView->selectionModel();
+    if(m_presenter->isPlaying())
+    {
+        ui->listView->selectionModel()->clear();
+    }
+    if(!selectionModel->isSelected(index))
+    {
+        selectionModel->setCurrentIndex(index,QItemSelectionModel::Select);
+    }
+
     auto image = m_presenter->getImageFromImageFrame(frame);
     auto scene = new QGraphicsScene(this->ui->graphicsView);
     auto pixmap = QPixmap::fromImage(image);
@@ -53,5 +69,10 @@ void EditWindow::selectFrame(const ImageFrame& frame)
 void EditWindow::playState(bool state)
 {
     ui->actionPlay->setChecked(state);
+}
+
+void EditWindow::currentSelect(const QModelIndex &index, const QModelIndex &)
+{
+
 }
 

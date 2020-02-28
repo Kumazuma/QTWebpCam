@@ -10,8 +10,11 @@ int main(int argc, char *argv[])
     {
         return -1;
     }
+    else
+    {
+        a.setStyleSheet(cssFile.readAll());
+    }
     QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":resource");
-    a.setStyleSheet(cssFile.readAll());
     MainWindow w;
     w.show();
     return a.exec();
