@@ -1,6 +1,6 @@
 #include "editpresenter.h"
 #include "../encodingthread.h"
-
+#include "../foreachthread.h"
 EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
     QObject(parent),
     m_model(store),
@@ -19,6 +19,10 @@ EditPresenter::~EditPresenter()
         m_thread->wait();
         delete m_thread;
         m_thread = nullptr;
+    }
+    if(m_model.store() != nullptr)
+    {
+        delete m_model.store();
     }
 }
 
@@ -55,7 +59,6 @@ void EditPresenter::saveAnimWebp(const QString& filePath)
     m_model.setFilePath(filePath);
     m_encoder = new WebpEncoder(m_model.store()->imageSize(), this);
 
-
     m_thread = new EncodingThread(*m_encoder, *m_model.store(),this);
     QObject::connect((EncodingThread*)m_thread, &EncodingThread::progress, this, &EditPresenter::progressEncode);
     QObject::connect(m_encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
@@ -69,6 +72,30 @@ void EditPresenter::cancelEncode()
     m_thread->wait();
     delete m_thread;
     m_thread = nullptr;
+}
+
+void EditPresenter::deleteFrame(size_t start, size_t end)
+{
+    auto storeBuilder = new MemoryMapStoreBuilder(m_model.store()->imageSize(), this);
+    auto thread = new FrameDeleteThread(*m_model.store(), *storeBuilder, this);
+    thread->setStart(start);
+    thread->setEnd(end);
+    thread->start();
+    thread->wait();
+    thread->deleteLater();
+    auto* tmp = m_model.store();
+    m_model.store() = storeBuilder->buildStore(this);
+
+    delete tmp;
+    delete storeBuilder;
+    if(m_model.isPlay())
+    {
+        m_model.setPlay(false);
+        m_timer.stop();
+        emit changePlayState(m_model.isPlay());
+    }
+    m_model.setSelectedIndex(std::nullopt);
+    emit updateImageStore();
 }
 
 void EditPresenter::play()
@@ -92,7 +119,6 @@ void EditPresenter::stop()
 {
     m_model.setPlay(false);
     m_timer.stop();
-
     emit changePlayState(m_model.isPlay());
 }
 

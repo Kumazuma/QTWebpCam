@@ -6,7 +6,7 @@
 #include <QThread>
 #include <QTimer>
 #include "./capturer.h"
-#include "./fileimagestore.h"
+#include "../fileimagestore.h"
 class Presenter : public QObject
 {
     Q_OBJECT
@@ -14,7 +14,7 @@ private:
     Capture::Model m_model;
 
     Capturer * m_capture = nullptr;
-    FileImageStoreBuilder * m_builder = nullptr;
+    MemoryMapStoreBuilder * m_builder = nullptr;
     QTimer * m_timer = nullptr;
     QThread m_thread;
 public:

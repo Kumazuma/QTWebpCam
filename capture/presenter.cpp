@@ -18,6 +18,10 @@ Presenter::~Presenter()
         m_thread.quit();
         m_thread.wait();
     }
+    if(m_builder != nullptr)
+    {
+        delete m_builder;
+    }
 }
 
 QRect Presenter::recoredRect() const
@@ -40,7 +44,7 @@ void Presenter::setRecoredRect(const QRect& rect)
     m_model.recoredRect(rect);
     emit changedRect(m_model.recoredRect());
 }
-
+#include <QAbstractEventDispatcher>
 void Presenter::startCapture()
 {
     if(m_capture != nullptr)
@@ -48,14 +52,16 @@ void Presenter::startCapture()
     emit startRecord();
 
     m_capture = new Capturer(m_model.recoredRect(), m_model.fps(), this);
-    m_builder = new FileImageStoreBuilder(m_model.recoredRect().size(), nullptr);
+    m_builder = new MemoryMapStoreBuilder(m_model.recoredRect().size(), nullptr);
     m_timer = new QTimer(this);
     m_builder->moveToThread(&m_thread);
-    m_capture->moveToThread(&m_thread);
     //슬롯-시그널 정의
     QObject::connect(m_timer, &QTimer::timeout, m_capture, &Capturer::process);
-    QObject::connect(m_capture, &Capturer::takeImage, m_builder, &FileImageStoreBuilder::pushBack);
+    void(MemoryMapStoreBuilder::*pushBack)(QImage, int) = &MemoryMapStoreBuilder::pushBack;
+    QObject::connect(m_capture, &Capturer::takeImage, m_builder, pushBack);
     QObject::connect(&m_thread, &QThread::finished, this, &Presenter::onExitThread);
+
+
     m_thread.start();
     m_capture->startCapture();
     m_timer->start(1);

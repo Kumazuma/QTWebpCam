@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QThread>
 #include "webpencoder.h"
-#include "capture/fileimagestore.h"
+#include "fileimagestore.h"
 class EncodingThread: public QThread
 {
     Q_OBJECT

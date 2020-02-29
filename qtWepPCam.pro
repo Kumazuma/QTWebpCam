@@ -1,9 +1,13 @@
 QT       += core gui
+QT += concurrent
 LIBS += -lz
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
-
+DEPENDPATH += $$PWD/libwebp-msw-x64
+LIBS += -L$$PWD/libwebp-msw-x64/ libwebpmux
+LIBS += -L$$PWD/libwebp-msw-x64/ libwebpdemux
+LIBS += -L$$PWD/libwebp-msw-x64/ libwebp
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -16,34 +20,48 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    fileimagestore.cpp \
+    foreachthread.cpp \
+    imageframe.cpp \
     capture/capturemodel.cpp \
-    capture/fileimagestore.cpp \
-    capture/imageframe.cpp \
     capturepreviewwindow.cpp \
     edit/editmodel.cpp \
     edit/editpresenter.cpp \
     edit/editwindow.cpp \
+    edit/encodingprogressdialog.cpp \
     edit/imageframemodel.cpp \
+    encodingthread.cpp \
     main.cpp \
+    webpencoder.cpp\
     ./capture/mainwindow.cpp \
     ./capture/presenter.cpp \
     ./capture/capturer.cpp
 HEADERS += \
+    fileimagestore.h \
+    foreachthread.h \
+    imageframe.h \
     capture/capturemodel.h \
     ./capture/capturer.h \
-    capture/fileimagestore.h \
-    capture/imageframe.h \
     capturepreviewwindow.h \
     edit/editmodel.h \
     edit/editpresenter.h \
     edit/editwindow.h \
+    edit/encodingprogressdialog.h \
     edit/imageframemodel.h \
+    encodingthread.h \
     mainwindow.h \
-    ./capture/presenter.h
-
+    webpencoder.h\
+    ./capture/presenter.h\
+    webp/decode.h\
+    webp/encode.h\
+    webp/demux.h\
+    webp/mux.h\
+    webp/mux_types.h\
+    webp/types.h
 FORMS += \
     capturepreviewwindow.ui \
     edit/editwindow.ui \
+    edit/encodingprogressdialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

@@ -1,16 +1,17 @@
 #include "imageframemodel.h"
 #include <QIcon>
-ImageFrameModel::ImageFrameModel(const FileImageStore& store, QObject* parent):
+ImageFrameModel::ImageFrameModel(const EditPresenter& presenter, QObject* parent):
     QAbstractListModel(parent),
-    m_store(store),
+    m_presenter(presenter),
     m_thumbnails(new std::map<int, QImage>())
 {
-
+    connect(&m_presenter, &EditPresenter::updateImageStore,
+            this, &ImageFrameModel::updateImageStore);
 }
 
 int ImageFrameModel::rowCount(const QModelIndex &) const
 {
-    return m_store.size();
+    return m_presenter.imageStore().size();
 }
 
 int ImageFrameModel::columnCount(const QModelIndex &) const
@@ -36,13 +37,14 @@ QVariant ImageFrameModel::headerData(int section, Qt::Orientation orientation, i
 
 QVariant ImageFrameModel::data(const QModelIndex &parent, int role) const
 {
-    auto frame = m_store.at(parent.row());
+    const auto& store = m_presenter.imageStore();
+    auto frame = store.at(parent.row());
     if(role == Qt::DecorationRole)
     {
         auto f = m_thumbnails->find(parent.row());
         if(f == m_thumbnails->end())
         {
-            auto temp = m_store.getImage(*frame);
+            auto temp = store.getImage(*frame);
             auto temp2 = temp.scaled(64,64);
             temp.detach();
             auto it = m_thumbnails->insert(std::pair<int, QImage>(parent.row(), temp2));
@@ -68,4 +70,10 @@ Qt::ItemFlags ImageFrameModel::flags(const QModelIndex &) const
             Qt::ItemFlag::ItemIsSelectable |
             Qt::ItemFlag::ItemIsEnabled |
             Qt::ItemNeverHasChildren;
+}
+
+void ImageFrameModel::updateImageStore()
+{
+    m_thumbnails->clear();
+    emit dataChanged(index(0) , index(m_presenter.imageStore().size()));
 }

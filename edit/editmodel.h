@@ -1,7 +1,7 @@
 #ifndef EDITMODEL_H
 #define EDITMODEL_H
 
-#include "../capture/fileimagestore.h"
+#include "fileimagestore.h"
 class EditModel
 {
 private:
@@ -11,7 +11,8 @@ private:
     QString m_filePath;
 public:
     EditModel(FileImageStore* store);
-    FileImageStore*& store(){return m_store;}
+    FileImageStore* store()const {return m_store;}
+    FileImageStore*& store() {return m_store;}
     std::optional<size_t> selectedIndex(){return m_selectedIndex;}
     void setSelectedIndex(const std::optional<size_t>& val){m_selectedIndex = val;}
     bool isPlay(){return m_isPlay;}

@@ -22,8 +22,6 @@ protected slots:
 public:
     explicit EditWindow(FileImageStore* store, QWidget *parent = nullptr);
     ~EditWindow();
-
-
 };
 
 #endif // EDITWINDOW_H

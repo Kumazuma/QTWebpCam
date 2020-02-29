@@ -15,13 +15,22 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     //ui->retake->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
     ui->setupUi(this);
 
-    auto model = new ImageFrameModel(m_presenter->imageStore(),ui->listView);
+    auto model = new ImageFrameModel(*m_presenter,ui->listView);
 
     ui->listView->setModel(model);
     auto selectionModel = ui->listView->selectionModel();
     connect(m_presenter, &EditPresenter::currentImageFrame, this, &EditWindow::selectFrame);
     connect(m_presenter, &EditPresenter::changePlayState, this, &EditWindow::playState);
+    connect(ui->actionDelete, &QAction::triggered, [this](bool)
+    {
+        auto s = ui->listView->selectionModel()->selectedIndexes();
+        if(s.size() == 0)
+            return;
+        size_t start = s.first().row();
+        size_t end = s.last().row() + 1;
+        m_presenter->deleteFrame(start, end);
 
+    });
     connect(ui->actionSave, &QAction::triggered, this, &EditWindow::save);
     connect(ui->actionPlay, &QAction::changed, [this]()
     {
@@ -30,6 +39,7 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
         else
             m_presenter->stop();
     });
+
     connect(selectionModel,
             &QItemSelectionModel::currentChanged,
             [this](const QModelIndex &index, const QModelIndex &)
@@ -47,6 +57,7 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
 EditWindow::~EditWindow()
 {
     delete ui;
+    delete m_presenter;
 }
 void EditWindow::selectFrame(const ImageFrame& frame)
 {

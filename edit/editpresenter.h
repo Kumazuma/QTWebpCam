@@ -22,13 +22,15 @@ private:
 public:
     explicit EditPresenter(FileImageStore* store, QObject *parent = nullptr);
     ~EditPresenter();
-    FileImageStore& imageStore(){return *m_model.store();}
+    const FileImageStore& imageStore() const {return *m_model.store();}
     void setCurrentImageFrame(const ImageFrame& frame);
     QImage getImageFromImageFrame(const ImageFrame& frame);
     std::optional<size_t> currentFrameIndex();
     bool isPlaying();
     void saveAnimWebp(const QString& filePath);
     void cancelEncode();
+    void deleteFrame(size_t start){deleteFrame(start,start);}
+    void deleteFrame(size_t start, size_t end);
 public slots:
     void play();
     void stop();
@@ -41,6 +43,7 @@ signals:
     void currentImageFrame(ImageFrame frame);
     void changePlayState(bool state);
     void completeFileSave(QString path);
+    void updateImageStore();
 };
 
 #endif // EDITPRESENTER_H

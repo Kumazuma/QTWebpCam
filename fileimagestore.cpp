@@ -1,6 +1,7 @@
 #include "fileimagestore.h"
 #include "imageframe.h"
 FileImageStoreBuilder::FileImageStoreBuilder(QSize imgSize, QObject *parent) :
+    QObject(parent),
     m_tempFile(new QTemporaryFile(parent)),
     m_imgSize(imgSize)
 {
@@ -21,6 +22,7 @@ FileImageStore *FileImageStoreBuilder::buildStore(QObject *parent)
 
 void FileImageStoreBuilder::pushBack(QImage image, int duration)
 {
+
     auto * data =  image.bits();
     auto len = image.sizeInBytes();
     char* compressedData = new char[len];
@@ -90,6 +92,14 @@ FileImageStore::FileImageStore(QTemporaryFile* file,
     }
 }
 
+FileImageStore::~FileImageStore()
+{
+    printf("%s is called", __FUNCTION__);
+    m_tempFile->unmap( m_mappedFile);
+    m_tempFile->close();
+    delete m_tempFile;
+}
+
 std::optional<ImageFrame> FileImageStore::at(size_t i) const
 {
     if(i < m_frames.size())
@@ -97,6 +107,16 @@ std::optional<ImageFrame> FileImageStore::at(size_t i) const
         return std::optional(m_frames[i]);
     }
     return std::nullopt;
+}
+
+uint8_t *FileImageStore::getRaw(size_t i)
+{
+    if(i < m_frames.size())
+    {
+        auto& frame = m_frames[i];
+        return m_mappedFile + frame.m_offset;
+    }
+    return nullptr;
 }
 
 QImage FileImageStore::getImage(const ImageFrame &frame) const
@@ -152,4 +172,121 @@ std::optional<size_t> FileImageStore::findIndex(const ImageFrame & frame)
 void FileImageStore::FreeImage(void *ptr)
 {
     free(ptr);
+}
+
+MemoryMapStoreBuilder::MemoryMapStoreBuilder(QSize imgSize, QObject *parent):
+    QObject(parent),
+    m_tempFile(new QTemporaryFile(parent)),
+    m_imgSize(imgSize)
+{
+    auto firstCapacity = m_imgSize.width() * m_imgSize.height() * 4 * 2;
+    m_capacity = firstCapacity;
+    m_tempFile->open();
+    m_tempFile->setAutoRemove(true);
+
+    for(int i = 0; i < firstCapacity/4; i++)
+    {
+        int temp = 0;
+        m_tempFile->write((char*)&temp, 4);
+    }
+    m_tempFile->flush();
+    m_mappedFile = m_tempFile->map(0, firstCapacity);
+    if(!m_mappedFile)
+    {
+        qDebug()<<"file mapping failed";
+    }
+}
+
+MemoryMapStoreBuilder::~MemoryMapStoreBuilder()
+{
+    if(m_tempFile != nullptr)
+    {
+        m_tempFile->unmap(m_mappedFile);
+        m_tempFile->close();
+        delete m_tempFile;
+    }
+}
+
+FileImageStore *MemoryMapStoreBuilder::buildStore(QObject *parent)
+{
+    auto temp = m_tempFile;
+    m_tempFile->unmap(m_mappedFile);
+    m_tempFile = nullptr;
+
+    return new FileImageStore(temp,
+                              m_imgSize,
+                              std::move(m_offsets),
+                              std::move(m_pixelformats),
+                              parent);
+}
+
+void MemoryMapStoreBuilder::pushBack(QImage image, int duration)
+{
+    auto * data =  image.bits();
+    auto len = image.sizeInBytes();
+    char* compressedData = new char[len];
+    ulong compressedDataLen = len;
+    compress2((Byte*)compressedData, &compressedDataLen, data, len,2);
+
+    pushBack((uint8_t*)compressedData, (size_t)compressedDataLen, image.format(), duration);
+    delete[] compressedData;
+}
+
+void MemoryMapStoreBuilder::pushBack(ImageFrame &frame)
+{
+    auto& store = frame.m_imageStore;
+    if(&store == nullptr)
+    {
+        return;
+    }
+    auto* ptr = store.m_mappedFile + frame.m_offset;
+    auto lenth = frame.m_size;
+    auto format = store.m_pixelformats[frame.m_formatIndex];
+    auto duration = frame.m_duration;
+    pushBack(ptr, lenth, format, duration);
+}
+
+void MemoryMapStoreBuilder::pushBack(uint8_t *ptr, size_t lenth, QImage::Format format, int duration)
+{
+    auto pos = 0;
+    if(!m_offsets.empty())
+    {
+        auto& frame = *(m_offsets.end() - 1);
+        pos = frame[0] + frame[1];
+    }
+    if(pos + lenth > m_capacity)
+    {
+        for(int i = 0; i < m_capacity/4; i++)
+        {
+            int temp = 0;
+            m_tempFile->write((char*)&temp, 4);
+        }
+        m_capacity += m_capacity/2;
+        m_tempFile->unmap(m_mappedFile);
+        m_mappedFile = m_tempFile->map(0, m_capacity);
+    }
+    memcpy(m_mappedFile + pos, ptr, lenth);
+
+    auto formatIndex = m_pixelformats.size();
+    auto pixmodel = format;
+
+    for(size_t i = 0 ; i <m_pixelformats.size();i++)
+    {
+        auto& it = m_pixelformats[i];
+        if(pixmodel == it)
+        {
+            formatIndex = i;
+            break;
+        }
+    }
+    if(formatIndex == m_pixelformats.size())
+    {
+        m_pixelformats.push_back(pixmodel);
+    }
+    std::array<uint64_t, 4> offset;
+    offset[0] = pos;
+    offset[1] = lenth;
+    offset[2] = formatIndex;
+    offset[3] = duration;
+    m_offsets.push_back(offset);
 }

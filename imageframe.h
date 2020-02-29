@@ -3,9 +3,11 @@
 #include <cstdint>
 #include <QImage>
 class FileImageStore;
+class MemoryMapStoreBuilder;
 class ImageFrame
 {
     friend class FileImageStore;
+    friend class MemoryMapStoreBuilder;
 public:
     ImageFrame():
     m_imageStore(*(FileImageStore*)nullptr){
