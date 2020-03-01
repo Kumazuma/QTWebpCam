@@ -36,7 +36,7 @@ public:
 
     QImage getImage(const ImageFrame& frame) const;
     size_t size() const;
-    QSize imageSize();
+    QSize imageSize() const;
     std::optional<size_t> findIndex(const ImageFrame&);
 protected:
     uint8_t* getRaw(size_t i);

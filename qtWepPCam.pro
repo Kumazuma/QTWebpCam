@@ -20,6 +20,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    edit/editrenderwidget.cpp \
     fileimagestore.cpp \
     foreachthread.cpp \
     imageframe.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
     ./capture/presenter.cpp \
     ./capture/capturer.cpp
 HEADERS += \
+    edit/editrenderwidget.h \
     fileimagestore.h \
     foreachthread.h \
     imageframe.h \

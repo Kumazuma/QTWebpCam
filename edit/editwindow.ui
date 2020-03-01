@@ -20,11 +20,7 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QGraphicsView" name="graphicsView"/>
-    </item>
-   </layout>
+   <layout class="QVBoxLayout" name="verticalLayout_2"/>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -63,6 +59,7 @@
    <addaction name="actionDelete"/>
    <addaction name="actionResize"/>
    <addaction name="actionSave"/>
+   <addaction name="actionCrop"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <attribute name="dockWidgetArea">
@@ -144,6 +141,15 @@
    </property>
    <property name="text">
     <string>저장</string>
+   </property>
+  </action>
+  <action name="actionCrop">
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/crop.svg</normaloff>:/resource/crop.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Crop</string>
    </property>
   </action>
  </widget>

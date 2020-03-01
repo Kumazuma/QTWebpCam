@@ -36,7 +36,7 @@ void EditPresenter::setCurrentImageFrame(const ImageFrame& frame)
     emit currentImageFrame(frame);
 }
 
-QImage EditPresenter::getImageFromImageFrame(const ImageFrame &frame)
+QImage EditPresenter::getImageFromImageFrame(const ImageFrame &frame) const
 {
     auto store = m_model.store();
     return store->getImage(frame);
@@ -120,6 +120,36 @@ void EditPresenter::stop()
     m_model.setPlay(false);
     m_timer.stop();
     emit changePlayState(m_model.isPlay());
+}
+
+void EditPresenter::setCropRect(QRect val)
+{
+    m_model.setCropRect(val);
+}
+
+void EditPresenter::crop()
+{
+    if(m_model.cropRect().size() == m_model.store()->imageSize())
+        return;
+    auto storeBuilder = new MemoryMapStoreBuilder(m_model.cropRect().size(), this);
+    auto thread = new ImageCropThread(*m_model.store(), *storeBuilder, this);
+    thread->setCropRect(m_model.cropRect());
+    thread->start();
+    thread->wait();
+    thread->deleteLater();
+    auto* tmp = m_model.store();
+    m_model.store() = storeBuilder->buildStore(this);
+
+    delete tmp;
+    delete storeBuilder;
+    if(m_model.isPlay())
+    {
+        m_model.setPlay(false);
+        m_timer.stop();
+        emit changePlayState(m_model.isPlay());
+    }
+    m_model.setSelectedIndex(std::nullopt);
+    emit updateImageStore();
 }
 
 void EditPresenter::timer()

@@ -4,5 +4,6 @@
         <file>quit.svg</file>
         <file>expand.svg</file>
         <file>save.svg</file>
+        <file>crop.svg</file>
     </qresource>
 </RCC>

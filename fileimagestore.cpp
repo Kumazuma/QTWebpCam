@@ -149,7 +149,7 @@ size_t FileImageStore::size() const
     return m_frames.size();
 }
 
-QSize FileImageStore::imageSize()
+QSize FileImageStore::imageSize()const
 {
     return m_imgSize;
 }

@@ -14,13 +14,19 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
 {
     //ui->retake->setIcon(style()->standardIcon(QStyle::SP_FileIcon));
     ui->setupUi(this);
-
+    ui_renderWidget = new EditRenderWidget(*m_presenter, this);
+    ui->verticalLayout_2->addWidget(ui_renderWidget);
     auto model = new ImageFrameModel(*m_presenter,ui->listView);
 
     ui->listView->setModel(model);
     auto selectionModel = ui->listView->selectionModel();
-    connect(m_presenter, &EditPresenter::currentImageFrame, this, &EditWindow::selectFrame);
-    connect(m_presenter, &EditPresenter::changePlayState, this, &EditWindow::playState);
+    connect(m_presenter, &EditPresenter::currentImageFrame,
+            this, &EditWindow::selectFrame);
+    connect(m_presenter, &EditPresenter::changePlayState,
+            this, &EditWindow::playState);
+    connect(ui_renderWidget, &EditRenderWidget::cropRect,
+            m_presenter, &EditPresenter::setCropRect);
+    connect(ui->actionCrop, &QAction::triggered, m_presenter, &EditPresenter::crop);
     connect(ui->actionDelete, &QAction::triggered, [this](bool)
     {
         auto s = ui->listView->selectionModel()->selectedIndexes();
@@ -71,22 +77,11 @@ void EditWindow::selectFrame(const ImageFrame& frame)
     {
         selectionModel->setCurrentIndex(index,QItemSelectionModel::Select);
     }
-
-    auto image = m_presenter->getImageFromImageFrame(frame);
-    auto scene = new QGraphicsScene(this->ui->graphicsView);
-    auto pixmap = QPixmap::fromImage(image);
-    scene->addPixmap(pixmap);
-    this->ui->graphicsView->setScene(scene);
 }
 
 void EditWindow::playState(bool state)
 {
     ui->actionPlay->setChecked(state);
-}
-
-void EditWindow::currentSelect(const QModelIndex &index, const QModelIndex &)
-{
-
 }
 
 void EditWindow::save(bool )

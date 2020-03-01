@@ -9,6 +9,7 @@ private:
     bool m_isPlay;
     std::optional<size_t> m_selectedIndex;
     QString m_filePath;
+    QRect m_cropRect;
 public:
     EditModel(FileImageStore* store);
     FileImageStore* store()const {return m_store;}
@@ -19,6 +20,8 @@ public:
     void setPlay(bool val){m_isPlay = val;}
     QString filePath(){return m_filePath;}
     void setFilePath(const QString& val){m_filePath = val;}
+    QRect cropRect(){return m_cropRect;}
+    void setCropRect(const QRect& val){m_cropRect= val;}
 };
 
 #endif // EDITMODEL_H

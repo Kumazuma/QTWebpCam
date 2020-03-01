@@ -60,11 +60,11 @@ void WebpEncoder::result(QIODevice &device)
     }
     while(totalWriteCount != m_webpData.size);
 }
-
+#include <QImage>
 void WebpEncoder::putFrame(const QImage &image, size_t duration)
 {
-    auto img = image.convertToFormat(QImage::Format_RGB888);
-    WebPPictureImportRGB(&m_frame, img.bits(), 3 * m_frame.width);
+    auto img = image.convertToFormat(QImage::Format_RGBX8888);
+    WebPPictureImportRGBX(&m_frame, img.bits(), 4 * m_imgSize.width());
     WebPAnimEncoderAdd(m_encoder, &m_frame, m_timestamp, &m_config);
     m_timestamp += duration;
     emit doneAFrame(++m_count);

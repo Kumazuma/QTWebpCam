@@ -24,7 +24,7 @@ public:
     ~EditPresenter();
     const FileImageStore& imageStore() const {return *m_model.store();}
     void setCurrentImageFrame(const ImageFrame& frame);
-    QImage getImageFromImageFrame(const ImageFrame& frame);
+    QImage getImageFromImageFrame(const ImageFrame& frame) const ;
     std::optional<size_t> currentFrameIndex();
     bool isPlaying();
     void saveAnimWebp(const QString& filePath);
@@ -34,6 +34,8 @@ public:
 public slots:
     void play();
     void stop();
+    void setCropRect(QRect);
+    void crop();
 protected slots:
     void timer();
     void progress(int current, int size);
