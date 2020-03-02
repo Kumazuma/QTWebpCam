@@ -8,13 +8,13 @@ class EditRenderWidget :public QGraphicsView
 {
     Q_OBJECT
 private:
-    const EditPresenter& m_presenter;
+    EditPresenter& m_presenter;
     QRect m_cropRect;
     std::optional<std::array<qint8,2>> m_sizingAxis;
     QPointF m_prevPoint;
     QGraphicsPathItem* m_pathItem;
 public:
-    EditRenderWidget(const EditPresenter& presenter, QWidget* parent = nullptr);
+    EditRenderWidget(EditPresenter& presenter, QWidget* parent = nullptr);
     ~EditRenderWidget();
 private:
     std::array<qint8,2> calcSizingDirections(const QPointF& point);

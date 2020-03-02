@@ -7,11 +7,11 @@ class EditModel
 {
 private:
     std::shared_ptr<FileImageStore> m_store;
-    bool m_isPlay;
+    bool m_isPlay = false;
     std::optional<size_t> m_selectedIndex;
-    QString m_filePath;
-    QRect m_cropRect;
-    QUndoStack * m_undoStack;
+    QString m_filePath = "";
+    QRect m_cropRect = QRect(0,0,0,0);
+    QUndoStack * m_undoStack = nullptr;
 public:
     EditModel(FileImageStore* store);
     std::shared_ptr<FileImageStore> store()const {return m_store;}

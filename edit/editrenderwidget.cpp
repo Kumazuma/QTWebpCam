@@ -1,11 +1,12 @@
 #include "editrenderwidget.h"
 #include <QMouseEvent>
-EditRenderWidget::EditRenderWidget(const EditPresenter& presenter, QWidget* parent):
+EditRenderWidget::EditRenderWidget(EditPresenter& presenter, QWidget* parent):
     QGraphicsView(parent),
     m_presenter(presenter)
 {
+    qDebug()<<__FUNCTION__;
     setMouseTracking(true);
-    connect(&m_presenter, &EditPresenter::currentImageFrame, this, &EditRenderWidget::selectedFrame);
+    connect(&m_presenter, SIGNAL(currentImageFrame(ImageFrame)), this, SLOT(selectedFrame(const ImageFrame &)));
     connect(&m_presenter, &EditPresenter::updateImageStore, this, &EditRenderWidget::reloadImageStore);
     m_cropRect.setX(0);
     m_cropRect.setY(0);
@@ -211,6 +212,7 @@ void EditRenderWidget::dragMoveEvent(QDragMoveEvent *event)
 
 void EditRenderWidget::selectedFrame(const ImageFrame &frame)
 {
+    qDebug()<<__FUNCTION__;
     if(m_cropRect.x() < 0)
         m_cropRect.setX(0);
     if(m_cropRect.y() < 0)
@@ -224,9 +226,14 @@ void EditRenderWidget::selectedFrame(const ImageFrame &frame)
     {
         m_cropRect.setHeight(imgSize.height() - m_cropRect.y());
     }
-
+    auto scene = this->scene();
+    if(scene != nullptr)
+    {
+        delete scene;
+    }
     auto image = m_presenter.getImageFromImageFrame(frame);
-    auto scene = new QGraphicsScene(this);
+
+    scene = new QGraphicsScene(this);
     auto pixmap = QPixmap::fromImage(image);
 
     QPainterPath path;

@@ -39,6 +39,7 @@ public:
     QSize imageSize() const;
     std::optional<size_t> findIndex(const ImageFrame&);
     void unload();
+    void load();
 protected:
     uint8_t* getRaw(size_t i);
     static void FreeImage(void* ptr);

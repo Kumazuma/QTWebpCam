@@ -33,6 +33,7 @@ EditPresenter::~EditPresenter()
 
 void EditPresenter::setCurrentImageFrame(const ImageFrame& frame)
 {
+    qDebug()<<__PRETTY_FUNCTION__;
     std::shared_ptr<FileImageStore> store = m_model.store();
     auto index = store->findIndex(frame);
     if(!index)

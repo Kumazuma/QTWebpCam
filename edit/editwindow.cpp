@@ -18,6 +18,7 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     ui->setupUi(this);
     ui_renderWidget = new EditRenderWidget(*m_presenter, this);
     ui->verticalLayout_2->addWidget(ui_renderWidget);
+    ui_renderWidget->show();
     auto model = new ImageFrameModel(*m_presenter,ui->listView);
     ui->listView->setModel(model);
     ui->undoView->setStack(m_presenter->undoStack());
@@ -54,6 +55,7 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     {
         if(!m_presenter->isPlaying())
         {
+            qDebug()<<__PRETTY_FUNCTION__;
             ImageFrame frame = index.data(Qt::UserRole).value<ImageFrame>();
             auto row = *m_presenter->currentFrameIndex();
             if(row != index.row())
@@ -71,17 +73,20 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
 
 EditWindow::~EditWindow()
 {
+    qDebug()<<__PRETTY_FUNCTION__;
     delete ui;
     delete m_presenter;
 }
 
 void EditWindow::closeEvent(QCloseEvent *event)
 {
+    qDebug()<<__PRETTY_FUNCTION__;
     QMainWindow::closeEvent(event);
     this->deleteLater();
 }
 void EditWindow::selectFrame(const ImageFrame& frame)
 {
+    qDebug()<<__PRETTY_FUNCTION__;
     auto index = ui->listView->model()->index(*m_presenter->currentFrameIndex() ,0);
     auto selectionModel = ui->listView->selectionModel();
     if(m_presenter->isPlaying())

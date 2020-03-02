@@ -8,6 +8,7 @@ FileImageStoreBuilder::FileImageStoreBuilder(QSize imgSize, QObject *parent) :
     if(!m_tempFile->open())
     {
         //TODO: 예외처리 해야 함
+        qDebug()<<m_tempFile->errorString();
     }
 }
 
@@ -75,9 +76,10 @@ FileImageStore::FileImageStore(QTemporaryFile* file,
     m_imgSize(imgSize),
     m_pixelformats(pixelformats)
 
-{
+{   m_tempFile->flush();
     m_tempFile->setParent(this);
-    m_mappedFile = m_tempFile->map(0, m_tempFile->size());
+    auto last = *(offset.end() - 1);
+    m_mappedFile = m_tempFile->map(0, last[0] + last[1]);
     for(auto& it: offset)
     {
         ImageFrame frame
@@ -125,11 +127,17 @@ QImage FileImageStore::getImage(const ImageFrame &frame) const
 {
     if(&frame.m_imageStore == this)
     {
-        if(!m_mappedFile)
-            const_cast<uint8_t*&>(m_mappedFile) =const_cast<QTemporaryFile*>(m_tempFile)->map(0, m_tempFile->size());
+        auto ptr = m_mappedFile;
+        if(!ptr)
+        {
+            ptr = m_tempFile->map(0, m_tempFile->size());
+            if(ptr)
+                qDebug()<<m_tempFile->errorString();
+            (const_cast<uint8_t*&>(m_mappedFile)) = ptr;
+        }
         ulong datasize = m_imgSize.width() * m_imgSize.height() * 4;
         uchar* data = (uchar*)malloc(datasize);
-        uncompress((Byte*)data, &datasize, m_mappedFile + frame.m_offset, frame.m_size);
+        uncompress((Byte*)data, &datasize, ptr + frame.m_offset, frame.m_size);
 
 
         QImage img(data,
@@ -142,6 +150,10 @@ QImage FileImageStore::getImage(const ImageFrame &frame) const
         if(img.isNull())
         {
             return QImage();
+        }
+        if(!m_mappedFile && ptr)
+        {
+            m_tempFile->unmap(ptr);
         }
         return img;
     }
@@ -181,6 +193,14 @@ void FileImageStore::unload()
         m_mappedFile = nullptr;
     }
 
+}
+
+void FileImageStore::load()
+{
+    if(!m_mappedFile)
+    {
+        m_mappedFile = m_tempFile->map(0, m_tempFile->size());
+    }
 }
 
 void FileImageStore::FreeImage(void *ptr)

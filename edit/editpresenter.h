@@ -47,7 +47,7 @@ protected slots:
     void finishEncode();
 signals:
     void progressEncode(int current, int size);
-    void currentImageFrame(ImageFrame frame);
+    void currentImageFrame(const ImageFrame &);
     void changePlayState(bool state);
     void completeFileSave(QString path);
     void updateImageStore();
