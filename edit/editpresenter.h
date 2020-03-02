@@ -7,6 +7,8 @@
 #include <QElapsedTimer>
 #include <QThread>
 #include "webpencoder.h"
+#include <QUndoCommand>
+
 class EditPresenter : public QObject
 {
     Q_OBJECT
@@ -31,6 +33,9 @@ public:
     void cancelEncode();
     void deleteFrame(size_t start){deleteFrame(start,start);}
     void deleteFrame(size_t start, size_t end);
+    void Undo(QUndoCommand* command);
+    void Redo(QUndoCommand* command);
+    QUndoStack* undoStack();
 public slots:
     void play();
     void stop();

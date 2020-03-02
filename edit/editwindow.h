@@ -19,7 +19,7 @@ public:
     explicit EditWindow(FileImageStore* store, QWidget *parent = nullptr);
     ~EditWindow();
 protected:
-
+    virtual void closeEvent(QCloseEvent* event) override;
 protected slots:
     void selectFrame(const ImageFrame&  frame);
     void playState(bool state);

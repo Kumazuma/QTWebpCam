@@ -22,7 +22,7 @@ protected:
     void moveEvent(QMoveEvent* event) override;
     void showEvent(QShowEvent * event) override;
     bool nativeEvent(const QByteArray& eventType, void* msg, long * result) override;
-
+    virtual void closeEvent(QCloseEvent* event) override;
 private slots:
     void onClickedClose();
     void onSpinWidthChange(int val);

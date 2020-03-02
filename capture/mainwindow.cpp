@@ -112,6 +112,12 @@ bool MainWindow::nativeEvent(const QByteArray &eventType, void* msg, long *resul
 
     return QMainWindow::nativeEvent(eventType, result, result);
 }
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMainWindow::closeEvent(event);
+    this->deleteLater();
+}
 void MainWindow::onClickedClose()
 {
     this->close();

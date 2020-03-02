@@ -9,6 +9,13 @@ Capturer::Capturer(const QRect& captureRect, const int fps, QObject* parent):
 {
 
 }
+
+Capturer::~Capturer()
+{
+#ifndef QT_NO_DEBUG
+    qDebug()<<"method: "<< __FUNCTION__;
+#endif
+}
 void Capturer::startCapture()
 {
     m_timer.start();

@@ -12,6 +12,13 @@ EditRenderWidget::EditRenderWidget(const EditPresenter& presenter, QWidget* pare
     m_cropRect.setSize(m_presenter.imageStore().imageSize());
 }
 
+EditRenderWidget::~EditRenderWidget()
+{
+#ifndef QT_NO_DEBUG
+    qDebug()<<"method: "<< __FUNCTION__;
+#endif
+}
+
 std::array<qint8, 2> EditRenderWidget::calcSizingDirections(const QPointF &point)
 {
     std::array<qint8, 2> res = {0,0};

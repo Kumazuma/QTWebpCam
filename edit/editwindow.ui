@@ -55,10 +55,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionSave"/>
    <addaction name="actionPlay"/>
    <addaction name="actionDelete"/>
    <addaction name="actionResize"/>
-   <addaction name="actionSave"/>
    <addaction name="actionCrop"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
@@ -150,6 +151,15 @@
    </property>
    <property name="text">
     <string>Crop</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/dot.svg</normaloff>:/resource/dot.svg</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
    </property>
   </action>
  </widget>

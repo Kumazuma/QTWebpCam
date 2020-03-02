@@ -3,9 +3,11 @@
 #include <QTextStream>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QFileDialog>
+#include "../mainwindow.h"
 #include "capturepreviewwindow.h"
 #include "imageframemodel.h"
-#include <QFileDialog>
+
 #include "encodingprogressdialog.h"
 EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     QMainWindow(parent),
@@ -17,8 +19,8 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     ui_renderWidget = new EditRenderWidget(*m_presenter, this);
     ui->verticalLayout_2->addWidget(ui_renderWidget);
     auto model = new ImageFrameModel(*m_presenter,ui->listView);
-
     ui->listView->setModel(model);
+    ui->undoView->setStack(m_presenter->undoStack());
     auto selectionModel = ui->listView->selectionModel();
     connect(m_presenter, &EditPresenter::currentImageFrame,
             this, &EditWindow::selectFrame);
@@ -58,12 +60,25 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
                 m_presenter->setCurrentImageFrame(frame);
         }
     });
+    connect(ui->actionNew, &QAction::triggered, [this](bool)
+    {
+        auto w = new MainWindow();
+        w->show();
+        this->close();
+        this->deleteLater();
+    });
 }
 
 EditWindow::~EditWindow()
 {
     delete ui;
     delete m_presenter;
+}
+
+void EditWindow::closeEvent(QCloseEvent *event)
+{
+    QMainWindow::closeEvent(event);
+    this->deleteLater();
 }
 void EditWindow::selectFrame(const ImageFrame& frame)
 {

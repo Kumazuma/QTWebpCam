@@ -1,6 +1,8 @@
 #include "editpresenter.h"
 #include "../encodingthread.h"
 #include "../foreachthread.h"
+#include "editdeletecommand.h"
+#include "editcropcommand.h"
 EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
     QObject(parent),
     m_model(store),
@@ -8,11 +10,18 @@ EditPresenter::EditPresenter(FileImageStore* store, QObject *parent) :
     m_elapsedTimer()
 {
     store->setParent(this);
+    QUndoStack * undostack = new QUndoStack(this);
+    m_model.setUndoStack(undostack);
     connect(&m_timer, &QTimer::timeout, this, &EditPresenter::timer);
 }
 
 EditPresenter::~EditPresenter()
 {
+#ifndef QT_NO_DEBUG
+    qDebug()<<"method: "<< __FUNCTION__;
+#endif
+    m_model.undoStack()->clear();
+    delete m_model.undoStack();
     if(m_thread != nullptr)
     {
         m_thread->requestInterruption();
@@ -20,15 +29,11 @@ EditPresenter::~EditPresenter()
         delete m_thread;
         m_thread = nullptr;
     }
-    if(m_model.store() != nullptr)
-    {
-        delete m_model.store();
-    }
 }
 
 void EditPresenter::setCurrentImageFrame(const ImageFrame& frame)
 {
-    auto* store = m_model.store();
+    std::shared_ptr<FileImageStore> store = m_model.store();
     auto index = store->findIndex(frame);
     if(!index)
         return;
@@ -83,10 +88,8 @@ void EditPresenter::deleteFrame(size_t start, size_t end)
     thread->start();
     thread->wait();
     thread->deleteLater();
-    auto* tmp = m_model.store();
-    m_model.store() = storeBuilder->buildStore(this);
-
-    delete tmp;
+    auto undoStack = m_model.undoStack();
+    undoStack->push(new EditDeleteCommand(*this,std::shared_ptr<FileImageStore>( storeBuilder->buildStore(this)), start, end));
     delete storeBuilder;
     if(m_model.isPlay())
     {
@@ -96,6 +99,43 @@ void EditPresenter::deleteFrame(size_t start, size_t end)
     }
     m_model.setSelectedIndex(std::nullopt);
     emit updateImageStore();
+}
+
+void EditPresenter::Undo(QUndoCommand *command)
+{
+    auto* deleteCommand = dynamic_cast<EditDeleteCommand*>(command);
+    auto* cropCommand = dynamic_cast<EditCropCommand*>(command);
+    if(deleteCommand)
+    {
+        m_model.store() = deleteCommand->swap(m_model.store());
+        emit updateImageStore();
+    }
+    if(cropCommand)
+    {
+        m_model.store() = cropCommand->swap(m_model.store());
+        emit updateImageStore();
+    }
+}
+
+void EditPresenter::Redo(QUndoCommand *command)
+{
+    auto* deleteCommand = dynamic_cast<EditDeleteCommand*>(command);
+    auto* cropCommand = dynamic_cast<EditCropCommand*>(command);
+    if(deleteCommand)
+    {
+        m_model.store() = deleteCommand->swap(m_model.store());
+        emit updateImageStore();
+    }
+    if(cropCommand)
+    {
+        m_model.store() = cropCommand->swap(m_model.store());
+        emit updateImageStore();
+    }
+}
+
+QUndoStack *EditPresenter::undoStack()
+{
+    return m_model.undoStack();
 }
 
 void EditPresenter::play()
@@ -137,10 +177,8 @@ void EditPresenter::crop()
     thread->start();
     thread->wait();
     thread->deleteLater();
-    auto* tmp = m_model.store();
-    m_model.store() = storeBuilder->buildStore(this);
-
-    delete tmp;
+    auto undoStack = m_model.undoStack();
+    undoStack->push(new EditCropCommand(*this, std::shared_ptr<FileImageStore>(storeBuilder->buildStore(this)), m_model.cropRect()));
     delete storeBuilder;
     if(m_model.isPlay())
     {

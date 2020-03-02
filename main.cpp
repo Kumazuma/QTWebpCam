@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
         a.setStyleSheet(cssFile.readAll());
     }
     QIcon::setFallbackSearchPaths(QIcon::fallbackSearchPaths() << ":resource");
-    MainWindow w;
-    w.show();
+    auto* w= new MainWindow();
+    w->show();
     return a.exec();
 }

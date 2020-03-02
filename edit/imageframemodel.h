@@ -5,6 +5,7 @@
 #include "editpresenter.h"
 #include <memory>
 #include <map>
+
 class ImageFrameModel : public QAbstractListModel
 {
     Q_OBJECT

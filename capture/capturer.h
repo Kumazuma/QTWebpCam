@@ -18,7 +18,7 @@ private:
     QThread * m_thread;
 public:
     Capturer(const QRect& captureRect, const int fps = 1, QObject* parent = nullptr);
-
+    ~Capturer();
     QPixmap capture();
 public slots:
     void startCapture();

@@ -15,6 +15,7 @@ private:
     QGraphicsPathItem* m_pathItem;
 public:
     EditRenderWidget(const EditPresenter& presenter, QWidget* parent = nullptr);
+    ~EditRenderWidget();
 private:
     std::array<qint8,2> calcSizingDirections(const QPointF& point);
     QCursor getSizingDirectionCursor(const std::array<qint8, 2>& axis);

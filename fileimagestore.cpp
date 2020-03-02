@@ -94,7 +94,9 @@ FileImageStore::FileImageStore(QTemporaryFile* file,
 
 FileImageStore::~FileImageStore()
 {
-    printf("%s is called", __FUNCTION__);
+#ifndef QT_NO_DEBUG
+    qDebug()<<"method: "<< __FUNCTION__;
+#endif
     m_tempFile->unmap( m_mappedFile);
     m_tempFile->close();
     delete m_tempFile;
@@ -123,6 +125,8 @@ QImage FileImageStore::getImage(const ImageFrame &frame) const
 {
     if(&frame.m_imageStore == this)
     {
+        if(!m_mappedFile)
+            const_cast<uint8_t*&>(m_mappedFile) =const_cast<QTemporaryFile*>(m_tempFile)->map(0, m_tempFile->size());
         ulong datasize = m_imgSize.width() * m_imgSize.height() * 4;
         uchar* data = (uchar*)malloc(datasize);
         uncompress((Byte*)data, &datasize, m_mappedFile + frame.m_offset, frame.m_size);
@@ -169,6 +173,16 @@ std::optional<size_t> FileImageStore::findIndex(const ImageFrame & frame)
     return std::nullopt;
 }
 
+void FileImageStore::unload()
+{
+    if(m_mappedFile)
+    {
+        m_tempFile->unmap(m_mappedFile);
+        m_mappedFile = nullptr;
+    }
+
+}
+
 void FileImageStore::FreeImage(void *ptr)
 {
     free(ptr);
@@ -199,6 +213,9 @@ MemoryMapStoreBuilder::MemoryMapStoreBuilder(QSize imgSize, QObject *parent):
 
 MemoryMapStoreBuilder::~MemoryMapStoreBuilder()
 {
+#ifndef QT_NO_DEBUG
+    qDebug()<<"method: "<< __FUNCTION__;
+#endif
     if(m_tempFile != nullptr)
     {
         m_tempFile->unmap(m_mappedFile);
