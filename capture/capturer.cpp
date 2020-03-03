@@ -1,13 +1,14 @@
 #include "capturer.h"
 #include <QDebug>
 #include <QScreen>
+#include <QGuiApplication>
 Capturer::Capturer(const QRect& captureRect, const int fps, QObject* parent):
     QObject(parent),
     m_captureRect(captureRect),
     m_fps(fps),
     m_lastCaptureTick(0)
 {
-
+    m_screen = QGuiApplication::primaryScreen();
 }
 
 Capturer::~Capturer()
@@ -15,6 +16,7 @@ Capturer::~Capturer()
 #ifndef QT_NO_DEBUG
     qDebug()<<"method: "<< __FUNCTION__;
 #endif
+    m_screen->deleteLater();
 }
 void Capturer::startCapture()
 {
@@ -28,13 +30,13 @@ void Capturer::endCapture()
 
 QPixmap Capturer::capture()
 {
-    QDesktopWidget desktop;
+    //QDesktopWidget desktop;
 
-    return QPixmap::grabWindow(desktop.winId(),
+    return m_screen->grabWindow(m_desktop.winId(),
                           m_captureRect.x(),
                           m_captureRect.y(),
                           m_captureRect.width(),
-                               m_captureRect.height());
+                            m_captureRect.height());
 }
 
 void Capturer::process()

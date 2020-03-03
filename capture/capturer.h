@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QElapsedTimer>
 #include <QThread>
+#include <QScreen>
 class Capturer: public QObject
 {
     Q_OBJECT
@@ -16,6 +17,8 @@ private:
     uint64_t m_lastCaptureTick;
     QElapsedTimer m_timer;
     QThread * m_thread;
+    QDesktopWidget m_desktop;
+    QScreen* m_screen;
 public:
     Capturer(const QRect& captureRect, const int fps = 1, QObject* parent = nullptr);
     ~Capturer();

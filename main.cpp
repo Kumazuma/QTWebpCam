@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QFile cssFile("./design.css");
     if(!cssFile.open(QFile::ReadOnly))
     {
-        return -1;
+        //return -1;
     }
     else
     {
