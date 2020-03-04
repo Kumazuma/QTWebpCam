@@ -16,7 +16,7 @@ Capturer::~Capturer()
 #ifndef QT_NO_DEBUG
     qDebug()<<"method: "<< __FUNCTION__;
 #endif
-    m_screen->deleteLater();
+
 }
 void Capturer::startCapture()
 {

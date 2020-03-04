@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnStart, SIGNAL(released()), m_presenter, SLOT(startCapture()));
     connect(ui->btnStop, SIGNAL(released()), m_presenter, SLOT(stopCapture()));
     connect(ui->cbFps, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onFpsChanged(const QString&)));
+    connect(m_presenter, SIGNAL(updateStore(int,int)), this, SLOT(onUpdateStore(int,int)));
 }
 
 MainWindow::~MainWindow()
@@ -194,4 +195,10 @@ void MainWindow::startRecord()
     ui->btnStart->setEnabled(false);
     ui->btnStop->setEnabled(true);
     m_isResizable = false;
+}
+
+void MainWindow::onUpdateStore(int count, int size)
+{
+    QString formattedString = "%1장 %2MB";
+    ui->lblState->setText(formattedString.arg(count).arg(size/(1024 * 1024)));
 }

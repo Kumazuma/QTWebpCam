@@ -27,12 +27,14 @@ public slots:
     void setRecoredRect(const QRect& rect);
     void startCapture();
     void stopCapture();
-private:
+private slots:
     void onExitThread();
+    void onUpdateStore(int count, int size);
 signals:
     void changedRect(const QRect& rect);
     void startRecord();
     void finishRecord(FileImageStore* store);
+    void updateStore(int, int);
 };
 
 

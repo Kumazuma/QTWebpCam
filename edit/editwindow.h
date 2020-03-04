@@ -24,7 +24,7 @@ protected slots:
     void selectFrame(const ImageFrame&  frame);
     void playState(bool state);
     void save(bool);
-
+    void updateImageStore();
 };
 
 #endif // EDITWINDOW_H

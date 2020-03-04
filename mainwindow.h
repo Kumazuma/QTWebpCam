@@ -33,5 +33,6 @@ private slots:
     void onFpsChanged(const QString& text);
     void showEditWindow(FileImageStore* store);
     void startRecord();
+    void onUpdateStore(int count, int size);
 };
 #endif // MAINWINDOW_H

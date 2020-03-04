@@ -81,8 +81,9 @@ public slots:
     void pushBack(QImage image, int duration);
 
 protected:
-
     void pushBack(uint8_t* ptr, size_t lenth, QImage::Format format, int duration);
+signals:
+    void updateStore(int, int);
 };
 
 #endif // FILEIMAGESTORE_H

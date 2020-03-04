@@ -263,7 +263,7 @@ void MemoryMapStoreBuilder::pushBack(QImage image, int duration)
     auto len = image.sizeInBytes();
     char* compressedData = new char[len];
     ulong compressedDataLen = len;
-    compress2((Byte*)compressedData, &compressedDataLen, data, len,2);
+    compress2((Byte*)compressedData, &compressedDataLen, data, len,1);
 
     pushBack((uint8_t*)compressedData, (size_t)compressedDataLen, image.format(), duration);
     delete[] compressedData;
@@ -326,4 +326,5 @@ void MemoryMapStoreBuilder::pushBack(uint8_t *ptr, size_t lenth, QImage::Format 
     offset[2] = formatIndex;
     offset[3] = duration;
     m_offsets.push_back(offset);
+    emit updateStore(m_offsets.size(), pos + lenth);
 }

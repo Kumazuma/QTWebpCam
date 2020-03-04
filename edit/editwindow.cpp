@@ -22,9 +22,13 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
     auto model = new ImageFrameModel(*m_presenter,ui->listView);
     ui->listView->setModel(model);
     ui->undoView->setStack(m_presenter->undoStack());
+
+    updateImageStore();
     auto selectionModel = ui->listView->selectionModel();
     connect(m_presenter, &EditPresenter::currentImageFrame,
             this, &EditWindow::selectFrame);
+    connect(m_presenter, &EditPresenter::updateImageStore,
+            this, &EditWindow::updateImageStore);
     connect(m_presenter, &EditPresenter::changePlayState,
             this, &EditWindow::playState);
     connect(ui_renderWidget, &EditRenderWidget::cropRect,
@@ -84,7 +88,7 @@ void EditWindow::closeEvent(QCloseEvent *event)
     QMainWindow::closeEvent(event);
     this->deleteLater();
 }
-void EditWindow::selectFrame(const ImageFrame& frame)
+void EditWindow::selectFrame(const ImageFrame& )
 {
     qDebug()<<__PRETTY_FUNCTION__;
     auto index = ui->listView->model()->index(*m_presenter->currentFrameIndex() ,0);
@@ -110,5 +114,29 @@ void EditWindow::save(bool )
    // dialog->show();
     dialog->exec();
     delete dialog;
+}
+
+void EditWindow::updateImageStore()
+{
+    ui->treeWidget->clear();
+    auto * rootItem = new QTreeWidgetItem();
+    QTreeWidgetItem * childItem = nullptr;
+    rootItem->setText(0, "information");
+    childItem = new QTreeWidgetItem();
+    childItem->setText(0, "width");
+    childItem->setText(1, QString("%1").arg( m_presenter->imageStore().imageSize().width()));
+    rootItem->addChild(childItem);
+    childItem = new QTreeWidgetItem();
+    childItem->setText(0, "height");
+    childItem->setText(1, QString("%1").arg( m_presenter->imageStore().imageSize().height()));
+    rootItem->addChild(childItem);
+    childItem = new QTreeWidgetItem();
+    childItem->setText(0, "frame");
+    childItem->setText(1, QString("%1").arg( m_presenter->imageStore().size()));
+    rootItem->addChild(childItem);
+    ui->treeWidget->addTopLevelItem(rootItem);
+    ui->treeWidget->setHeaderLabels({"",""});
+    ui->treeWidget->setHeaderHidden(true);
+    ui->treeWidget->expandAll();
 }
 
