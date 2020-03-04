@@ -195,6 +195,7 @@ void MainWindow::startRecord()
     ui->btnStart->setEnabled(false);
     ui->btnStop->setEnabled(true);
     m_isResizable = false;
+    setFixedSize(this->geometry().size());
 }
 
 void MainWindow::onUpdateStore(int count, int size)
