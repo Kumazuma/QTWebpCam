@@ -29,7 +29,7 @@ public:
     QImage getImageFromImageFrame(const ImageFrame& frame) const ;
     std::optional<size_t> currentFrameIndex();
     bool isPlaying();
-    void saveAnimWebp(const QString& filePath);
+
     void cancelEncode();
     void deleteFrame(size_t start){deleteFrame(start,start);}
     void deleteFrame(size_t start, size_t end);
@@ -41,6 +41,8 @@ public slots:
     void stop();
     void setCropRect(QRect);
     void crop();
+    void setFilePath(const QString& filePath);
+    void saveAnimWebp();
 protected slots:
     void timer();
     void progress(int current, int size);

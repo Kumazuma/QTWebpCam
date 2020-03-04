@@ -9,18 +9,14 @@ EncodingProgressDialog::EncodingProgressDialog(EditPresenter & presenter, QWidge
     m_presenter(presenter)
 {
     ui->setupUi(this);
-    QString filePath =QFileDialog::getSaveFileName(this,
-            tr("Save Anim Webp File"), "",
-            tr("Webp file (*.webp);;"));
-    if(filePath.isEmpty())
-        close();
+
     connect(&m_presenter, &EditPresenter::progressEncode,
             this,&EncodingProgressDialog::progressEncode);
     connect(&m_presenter, &EditPresenter::completeFileSave,
             this, &EncodingProgressDialog::completeEncode);
     connect(ui->buttonBox, &QDialogButtonBox::clicked,
             this, &EncodingProgressDialog::buttonClicked);
-    m_presenter.saveAnimWebp(filePath);
+    m_presenter.saveAnimWebp();
 }
 
 EncodingProgressDialog::~EncodingProgressDialog()

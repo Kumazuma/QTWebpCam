@@ -44,13 +44,14 @@ void ImageCropThread::setCropRect(const QRect &rect)
 {
     m_rect = rect;
 }
-
+#include <QAbstractEventDispatcher>
 void ImageCropThread::run()
 {
     for(size_t i = 0; i < m_source.size(); i++)
     {
         if(this->isInterruptionRequested())
             return;
+        this->eventDispatcher()->processEvents(QEventLoop::AllEvents);
         auto frame = m_source.at(i);
         auto img = m_source.getImage(*frame);
         m_dest.pushBack(img.copy(m_rect), frame->duration());

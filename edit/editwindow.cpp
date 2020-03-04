@@ -110,10 +110,18 @@ void EditWindow::playState(bool state)
 
 void EditWindow::save(bool )
 {
-    auto dialog = new EncodingProgressDialog(*m_presenter, this);
-   // dialog->show();
-    dialog->exec();
-    delete dialog;
+    QString filePath =QFileDialog::getSaveFileName(this,
+            tr("Save Anim Webp File"), "",
+            tr("Webp file (*.webp);;"));
+    if(!filePath.isEmpty())
+    {
+        m_presenter->setFilePath(filePath);
+        auto dialog = new EncodingProgressDialog(*m_presenter, this);
+        // dialog->show();
+         dialog->exec();
+         delete dialog;
+        return;
+    }
 }
 
 void EditWindow::updateImageStore()

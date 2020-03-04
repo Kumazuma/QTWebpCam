@@ -135,17 +135,17 @@ QImage FileImageStore::getImage(const ImageFrame &frame) const
                 qDebug()<<m_tempFile->errorString();
             (const_cast<uint8_t*&>(m_mappedFile)) = ptr;
         }
-        ulong datasize = m_imgSize.width() * m_imgSize.height() * 4;
-        uchar* data = (uchar*)malloc(datasize);
-        uncompress((Byte*)data, &datasize, ptr + frame.m_offset, frame.m_size);
+        //ulong datasize = m_imgSize.width() * m_imgSize.height() * 4;
+        //uchar* data = (uchar*)malloc(datasize);
+        //uncompress((Byte*)data, &datasize, ptr + frame.m_offset, frame.m_size);
 
 
-        QImage img(data,
+        QImage img(ptr + frame.m_offset,
                    m_imgSize.width(),
                    m_imgSize.height(),
                    m_pixelformats[frame.m_formatIndex],
                 FileImageStore::FreeImage,
-                data);
+                ptr + frame.m_offset);
 
         if(img.isNull())
         {
@@ -203,9 +203,9 @@ void FileImageStore::load()
     }
 }
 
-void FileImageStore::FreeImage(void *ptr)
+void FileImageStore::FreeImage(void *)
 {
-    free(ptr);
+    //free(ptr);
 }
 
 MemoryMapStoreBuilder::MemoryMapStoreBuilder(QSize imgSize, QObject *parent):
@@ -261,12 +261,12 @@ void MemoryMapStoreBuilder::pushBack(QImage image, int duration)
 {
     auto * data =  image.bits();
     auto len = image.sizeInBytes();
-    char* compressedData = new char[len];
-    ulong compressedDataLen = len;
-    compress2((Byte*)compressedData, &compressedDataLen, data, len,1);
+    //char* compressedData = new char[len];
+    //ulong compressedDataLen = len;
+    //compress2((Byte*)compressedData, &compressedDataLen, data, len,1);
 
-    pushBack((uint8_t*)compressedData, (size_t)compressedDataLen, image.format(), duration);
-    delete[] compressedData;
+    pushBack(data, len, image.format(), duration);
+    //delete[] compressedData;
 }
 
 void MemoryMapStoreBuilder::pushBack(ImageFrame &frame)

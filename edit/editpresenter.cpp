@@ -58,18 +58,23 @@ bool EditPresenter::isPlaying()
     return m_model.isPlay();
 }
 
-void EditPresenter::saveAnimWebp(const QString& filePath)
+void EditPresenter::setFilePath(const QString& filePath)
 {
     if(m_thread != nullptr)
         return;
     m_model.setFilePath(filePath);
+
+
+}
+
+void EditPresenter::saveAnimWebp()
+{
     m_encoder = new WebpEncoder(m_model.store()->imageSize(), this);
 
     m_thread = new EncodingThread(*m_encoder, *m_model.store(),this);
     QObject::connect((EncodingThread*)m_thread, &EncodingThread::progress, this, &EditPresenter::progressEncode);
     QObject::connect(m_encoder, &WebpEncoder::finish, this, &EditPresenter::finishEncode);
     m_thread->start();
-
 }
 
 void EditPresenter::cancelEncode()
