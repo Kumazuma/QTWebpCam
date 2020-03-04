@@ -212,7 +212,7 @@ void EditRenderWidget::dragMoveEvent(QDragMoveEvent *event)
 
 void EditRenderWidget::selectedFrame(const ImageFrame &frame)
 {
-    qDebug()<<__FUNCTION__;
+    qDebug()<<__PRETTY_FUNCTION__;
     if(m_cropRect.x() < 0)
         m_cropRect.setX(0);
     if(m_cropRect.y() < 0)
