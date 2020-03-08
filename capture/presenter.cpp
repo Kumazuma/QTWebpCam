@@ -60,7 +60,7 @@ void Presenter::startCapture()
     void(MemoryMapStoreBuilder::*pushBack)(QImage, int) = &MemoryMapStoreBuilder::pushBack;
     QObject::connect(m_capture, &Capturer::takeImage, m_builder, pushBack);
     QObject::connect(&m_thread, &QThread::finished, this, &Presenter::onExitThread);
-    QObject::connect(m_builder, SIGNAL(updateStore(int,int)), this, SLOT(onUpdateStore(int,int)));
+    QObject::connect(m_builder, SIGNAL(updateStore(int,quint64)), this, SLOT(onUpdateStore(int,quint64)));
 
     m_thread.start();
     m_capture->startCapture();
@@ -80,7 +80,7 @@ void Presenter::onExitThread()
     emit finishRecord(store);
 }
 
-void Presenter::onUpdateStore(int count, int size)
+void Presenter::onUpdateStore(int count, quint64 size)
 {
     emit updateStore(count, size);
 }

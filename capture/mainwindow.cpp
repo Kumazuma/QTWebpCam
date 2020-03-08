@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnStart, SIGNAL(released()), m_presenter, SLOT(startCapture()));
     connect(ui->btnStop, SIGNAL(released()), m_presenter, SLOT(stopCapture()));
     connect(ui->cbFps, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onFpsChanged(const QString&)));
-    connect(m_presenter, SIGNAL(updateStore(int,int)), this, SLOT(onUpdateStore(int,int)));
+    connect(m_presenter, SIGNAL(updateStore(int,quint64)), this, SLOT(onUpdateStore(int,quint64)));
 }
 
 MainWindow::~MainWindow()
@@ -198,8 +198,8 @@ void MainWindow::startRecord()
     setFixedSize(this->geometry().size());
 }
 
-void MainWindow::onUpdateStore(int count, int size)
+void MainWindow::onUpdateStore(int count, quint64 size)
 {
     QString formattedString = "%1장 %2MB";
-    ui->lblState->setText(formattedString.arg(count).arg(size/(1024 * 1024)));
+    ui->lblState->setText(formattedString.arg(count).arg(size/(1024l * 1024l)));
 }
