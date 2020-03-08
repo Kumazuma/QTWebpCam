@@ -23,6 +23,7 @@ SOURCES += \
     edit/editcropcommand.cpp \
     edit/editdeletecommand.cpp \
     edit/editrenderwidget.cpp \
+    edit/renderwidgetsbehavior.cpp \
     fileimagestore.cpp \
     foreachthread.cpp \
     imageframe.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     edit/editcropcommand.h \
     edit/editdeletecommand.h \
     edit/editrenderwidget.h \
+    edit/renderwidgetsbehavior.h \
     fileimagestore.h \
     foreachthread.h \
     imageframe.h \

@@ -31,7 +31,7 @@ EditWindow::EditWindow(FileImageStore* store, QWidget *parent) :
             this, &EditWindow::updateImageStore);
     connect(m_presenter, &EditPresenter::changePlayState,
             this, &EditWindow::playState);
-    connect(ui_renderWidget, &EditRenderWidget::cropRect,
+    connect(ui_renderWidget, &EditRenderWidget::cropRectUpdate,
             m_presenter, &EditPresenter::setCropRect);
     connect(ui->actionCrop, &QAction::triggered, m_presenter, &EditPresenter::crop);
     connect(ui->actionDelete, &QAction::triggered, [this](bool)
