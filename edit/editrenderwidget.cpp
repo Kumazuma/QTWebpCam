@@ -1,5 +1,6 @@
 #include "editrenderwidget.h"
 #include <QMouseEvent>
+#include <QScrollBar>
 EditRenderWidget::EditRenderWidget(EditPresenter& presenter, QWidget* parent):
     QGraphicsView(parent),
     m_presenter(presenter),
@@ -116,6 +117,13 @@ void EditRenderWidget::keyReleaseEvent(QKeyEvent *event)
     auto behavior = m_behavior->keyReleaseEvent(*this, *event);
     if(behavior)
         m_behavior.swap(*behavior);
+}
+
+void EditRenderWidget::resizeEvent(QResizeEvent *event)
+{
+    auto size = event->size();
+    verticalScrollBar()->setPageStep(size.height() / 10);
+    horizontalScrollBar()->setPageStep(size.width() / 10);
 }
 
 void EditRenderWidget::selectedFrame(const ImageFrame &frame)

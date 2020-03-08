@@ -1,6 +1,6 @@
 #include "renderwidgetsbehavior.h"
 #include "editrenderwidget.h"
-
+#include<QScrollBar>
 
 DefaultBehavior::DefaultBehavior()
 {
@@ -131,6 +131,12 @@ ReturnType DefaultBehavior::mouseReleaseEvent(EditRenderWidget& widget, const QM
 }
 ReturnType DefaultBehavior::wheelEvent(EditRenderWidget & widget, const QWheelEvent & event)
 {
+    int d = event.delta();
+    auto scrollbar = widget.verticalScrollBar();
+    if(d > 0)
+        scrollbar->setValue(scrollbar->value() - scrollbar->pageStep() );
+    else if(d < 0)
+        scrollbar->setValue(scrollbar->value() + scrollbar->pageStep());
     return std::nullopt;
 }
 
@@ -142,8 +148,8 @@ ReturnType DefaultBehavior::keyPressEvent(EditRenderWidget & widget, const QKeyE
     return std::unique_ptr<RenderWidgetsBehavior>(new ScaleBehavior());
     case Qt::Key_Space:
     return std::unique_ptr<RenderWidgetsBehavior>(new GrabMoveBehavior(widget));
-//    case Qt::Key_Shift:
-//    return std::unique_ptr<RenderWidgetsBehavior>(new HScrollBehavior());
+    case Qt::Key_Shift:
+    return std::unique_ptr<RenderWidgetsBehavior>(new HScrollBehavior());
     }
     return std::nullopt;
 }
@@ -222,31 +228,45 @@ GrabMoveBehavior::GrabMoveBehavior(EditRenderWidget & widget)
 {
     m_prev = widget.mapFromGlobal(QCursor::pos());
 }
-#include<QScrollBar>
+
 ReturnType GrabMoveBehavior::mouseMoveEvent(EditRenderWidget &widget, const QMouseEvent & event)
 {
     QMouseEvent& e = const_cast<QMouseEvent&>(event);
     e.accept();
     auto now = event.pos();
-    auto delta = (now - m_prev)/widget.scale();
+    auto delta = (now - m_prev);
     if(delta.x() == 0 && delta.y() == 0)
         return std::nullopt;
     m_prev = now;
 
     widget.horizontalScrollBar()->setValue(widget.horizontalScrollBar()->value() - delta.x());
     widget.verticalScrollBar()->setValue(widget.verticalScrollBar()->value() - delta.y());
-    //widget.centerOn(,);
-    //delta += //QPoint(t.dx(), t.dy());
-    //t = QTransform::fromTranslate(delta.x(), delta.y()).scale(widget.scale(),widget.scale());
-    //qDebug()<<t;
-    //widget.setTransform(t,true);
-
     return std::nullopt;
 }
 
 ReturnType GrabMoveBehavior::keyReleaseEvent(EditRenderWidget &, const QKeyEvent & event)
 {
     if(event.key() == Qt::Key_Space)
+    {
+        return std::unique_ptr<RenderWidgetsBehavior>(new DefaultBehavior());
+    }
+    return std::nullopt;
+}
+
+ReturnType HScrollBehavior::wheelEvent(EditRenderWidget & widget, const QWheelEvent & event)
+{
+    int d = event.delta();
+    auto scrollbar = widget.horizontalScrollBar();
+    if(d > 0)
+        scrollbar->setValue(scrollbar->value() - scrollbar->pageStep());
+    else if(d < 0)
+        scrollbar->setValue(scrollbar->value() + scrollbar->pageStep());
+    return std::nullopt;
+}
+
+ReturnType HScrollBehavior::keyReleaseEvent(EditRenderWidget &, const QKeyEvent & event)
+{
+    if(event.key() == Qt::Key_Shift)
     {
         return std::unique_ptr<RenderWidgetsBehavior>(new DefaultBehavior());
     }

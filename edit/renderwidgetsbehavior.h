@@ -41,12 +41,6 @@ public:
     ReturnType wheelEvent(EditRenderWidget&, const QWheelEvent&)override;
     ReturnType keyReleaseEvent(EditRenderWidget&, const QKeyEvent&) override;
 };
-class VScrollBehavior: public RenderWidgetsBehavior
-{
-public:
-    ReturnType wheelEvent(EditRenderWidget&, const QWheelEvent&)override;
-    ReturnType keyReleaseEvent(EditRenderWidget&, const QKeyEvent&) override;
-};
 class HScrollBehavior: public RenderWidgetsBehavior
 {
 public:

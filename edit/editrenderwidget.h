@@ -35,6 +35,7 @@ protected:
     virtual void wheelEvent(QWheelEvent *event) override;
     virtual void keyPressEvent(QKeyEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
 protected slots:
     void selectedFrame(const ImageFrame& frame);
     void reloadImageStore();
