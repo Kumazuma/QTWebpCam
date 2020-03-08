@@ -225,14 +225,16 @@ GrabMoveBehavior::GrabMoveBehavior(EditRenderWidget & widget)
 #include<QScrollBar>
 ReturnType GrabMoveBehavior::mouseMoveEvent(EditRenderWidget &widget, const QMouseEvent & event)
 {
+    QMouseEvent& e = const_cast<QMouseEvent&>(event);
+    e.accept();
     auto now = event.pos();
     auto delta = (now - m_prev)/widget.scale();
     if(delta.x() == 0 && delta.y() == 0)
         return std::nullopt;
     m_prev = now;
 
-    auto y =  widget.verticalScrollBar()->value() + widget.height()/2;
-    auto x = widget.horizontalScrollBar()->value() + widget.width()/2;
+    widget.horizontalScrollBar()->setValue(widget.horizontalScrollBar()->value() - delta.x());
+    widget.verticalScrollBar()->setValue(widget.verticalScrollBar()->value() - delta.y());
     //widget.centerOn(,);
     //delta += //QPoint(t.dx(), t.dy());
     //t = QTransform::fromTranslate(delta.x(), delta.y()).scale(widget.scale(),widget.scale());

@@ -48,7 +48,6 @@ void EditRenderWidget::setCropRect(const QRect &rect)
 
 void EditRenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    QGraphicsView::mouseMoveEvent(event);
     auto scene = this->scene();
     if(!scene)
         return;
@@ -59,7 +58,6 @@ void EditRenderWidget::mouseMoveEvent(QMouseEvent *event)
 
 void EditRenderWidget::mousePressEvent(QMouseEvent *event)
 {
-    QGraphicsView::mousePressEvent(event);
     auto scene = this->scene();
     if(!scene)
         return;
@@ -70,7 +68,6 @@ void EditRenderWidget::mousePressEvent(QMouseEvent *event)
 
 void EditRenderWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    QGraphicsView::mousePressEvent(event);
     auto scene = this->scene();
     if(!scene)
         return;
