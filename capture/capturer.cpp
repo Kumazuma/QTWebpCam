@@ -2,22 +2,27 @@
 #include <QDebug>
 #include <QScreen>
 #include <QGuiApplication>
-Capturer::Capturer(const QRect& captureRect, const int fps, QObject* parent):
+Capturer::Capturer(const int fps, QObject* parent):
     QObject(parent),
-    m_captureRect(captureRect),
     m_fps(fps),
     m_lastCaptureTick(0)
 {
-    m_screen = QGuiApplication::primaryScreen();
-}
 
-Capturer::~Capturer()
+}
+std::unique_ptr<Capturer> Capturer::CreateCapturer(const QRect &captureRect, const int fps, QObject *parent)
 {
-#ifndef QT_NO_DEBUG
-    qDebug()<<"method: "<< __FUNCTION__;
+    Capturer * res = nullptr;
+#ifdef Q_OS_WIN
+    res = new DXGICapturer(captureRect, fps, parent);
+    if(res->valid())
+        return std::unique_ptr<Capturer>(res);
 #endif
-
+    res = new QtCapturer(captureRect, fps, parent);
+    if(res->valid())
+        return std::unique_ptr<Capturer>(res);
+    return nullptr;
 }
+
 void Capturer::startCapture()
 {
     m_timer.start();
@@ -27,18 +32,6 @@ void Capturer::endCapture()
 {
     m_isKeepGoing = false;
 }
-
-QPixmap Capturer::capture()
-{
-    //QDesktopWidget desktop;
-
-    return m_screen->grabWindow(m_desktop.winId(),
-                          m_captureRect.x(),
-                          m_captureRect.y(),
-                          m_captureRect.width(),
-                            m_captureRect.height());
-}
-
 void Capturer::process()
 {
     auto now = m_timer.elapsed();
@@ -48,18 +41,34 @@ void Capturer::process()
     {
         m_lastCaptureTick = now;
         auto res = capture();
-        auto img = res.toImage();
-        emit takeImage(img,delta);
+        emit takeImage(res,delta);
     }
-    if(!m_isKeepGoing)
-    {
-        emit finished();
-    }
+}
+QtCapturer::QtCapturer(const QRect &captureRect, const int fps, QObject *parent):
+    Capturer(fps, parent),
+    m_captureRect(captureRect),
+    m_screen(QGuiApplication::primaryScreen())
+{
 }
 
-void Capturer::stop()
+QtCapturer::~QtCapturer()
 {
-    m_isKeepGoing = false;
-    emit finished();
+#ifndef QT_NO_DEBUG
+    qDebug()<<"method: "<< __FUNCTION__;
+#endif
 }
+
+
+QImage QtCapturer::capture()
+{
+    //QDesktopWidget desktop;
+
+    return m_screen->grabWindow(m_desktop.winId(),
+                          m_captureRect.x(),
+                          m_captureRect.y(),
+                          m_captureRect.width(),
+                            m_captureRect.height()).toImage();
+}
+
+
 

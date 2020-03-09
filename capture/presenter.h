@@ -13,7 +13,7 @@ class Presenter : public QObject
 private:
     Capture::Model m_model;
 
-    Capturer * m_capture = nullptr;
+    std::unique_ptr<Capturer> m_capture = nullptr;
     MemoryMapStoreBuilder * m_builder = nullptr;
     QTimer * m_timer = nullptr;
     QThread m_thread;

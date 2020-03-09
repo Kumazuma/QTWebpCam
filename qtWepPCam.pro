@@ -8,6 +8,11 @@ DEPENDPATH += $$PWD/libwebp-msw-x64
 LIBS += -L$$PWD/libwebp-msw-x64/ libwebpmux
 LIBS += -L$$PWD/libwebp-msw-x64/ libwebpdemux
 LIBS += -L$$PWD/libwebp-msw-x64/ libwebp
+win32|win64{
+    LIBS += -lD3D11
+    LIBS += -ldxgi
+    LIBS += -ldxguid
+}
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -20,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    capture/msw-capturer.cpp \
     edit/editcropcommand.cpp \
     edit/editdeletecommand.cpp \
     edit/editrenderwidget.cpp \
