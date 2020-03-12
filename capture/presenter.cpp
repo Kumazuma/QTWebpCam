@@ -51,25 +51,24 @@ void Presenter::startCapture()
         return;
     emit startRecord();
 
-    m_capture = new Capturer(m_model.recoredRect(), m_model.fps(), this);
+    m_capture = Capturer::CreateCapturer(m_model.recoredRect(), m_model.fps(), this);
     m_builder = new MemoryMapStoreBuilder(m_model.recoredRect().size(), nullptr);
     m_timer = new QTimer(this);
     m_builder->moveToThread(&m_thread);
     //슬롯-시그널 정의
-    QObject::connect(m_timer, &QTimer::timeout, m_capture, &Capturer::process);
+    QObject::connect(m_timer, &QTimer::timeout, m_capture.get(), &Capturer::process);
     void(MemoryMapStoreBuilder::*pushBack)(QImage, int) = &MemoryMapStoreBuilder::pushBack;
-    QObject::connect(m_capture, &Capturer::takeImage, m_builder, pushBack);
+    QObject::connect(m_capture.get(), &Capturer::takeImage, m_builder, pushBack);
     QObject::connect(&m_thread, &QThread::finished, this, &Presenter::onExitThread);
     QObject::connect(m_builder, SIGNAL(updateStore(int,quint64)), this, SLOT(onUpdateStore(int,quint64)));
 
     m_thread.start();
     m_capture->startCapture();
-    m_timer->start(1);
+    m_timer->start(2);
 }
 
 void Presenter::stopCapture()
 {
-    m_capture->stop();
     m_timer->stop();
     m_thread.quit();
 }

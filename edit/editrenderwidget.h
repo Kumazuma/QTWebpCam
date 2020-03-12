@@ -4,21 +4,27 @@
 #include "editpresenter.h"
 #include <optional>
 #include <QGraphicsPathItem>
+#include "renderwidgetsbehavior.h"
+#include <QScopedPointer>
 class EditRenderWidget :public QGraphicsView
 {
     Q_OBJECT
+    friend struct RenderWidgetsBehavior;
 private:
     EditPresenter& m_presenter;
     QRect m_cropRect;
-    std::optional<std::array<qint8,2>> m_sizingAxis;
-    QPointF m_prevPoint;
     QGraphicsPathItem* m_pathItem;
+    qreal m_scale;
+    std::unique_ptr<RenderWidgetsBehavior> m_behavior;
 public:
     EditRenderWidget(EditPresenter& presenter, QWidget* parent = nullptr);
     ~EditRenderWidget();
-private:
-    std::array<qint8,2> calcSizingDirections(const QPointF& point);
-    QCursor getSizingDirectionCursor(const std::array<qint8, 2>& axis);
+
+    qreal scale(){return m_scale;}
+    void setScale(qreal val);
+    auto imageSize(){return m_presenter.imageStore().imageSize();}
+    void setCropRect(const QRect& rect);
+    auto cropRect(){return m_cropRect;}
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *event) override;
@@ -26,11 +32,15 @@ protected:
     virtual void dragEnterEvent(QDragEnterEvent *event) override;
     virtual void dragLeaveEvent(QDragLeaveEvent *event) override;
     virtual void dragMoveEvent(QDragMoveEvent *event) override;
+    virtual void wheelEvent(QWheelEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
 protected slots:
     void selectedFrame(const ImageFrame& frame);
     void reloadImageStore();
 signals:
-    void cropRect(QRect);
+    void cropRectUpdate(QRect);
 };
 
 #endif // EDITRENDERWIDGET_H
