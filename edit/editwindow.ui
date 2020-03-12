@@ -132,7 +132,10 @@
      <normaloff>:/resource/expand.svg</normaloff>:/resource/expand.svg</iconset>
    </property>
    <property name="text">
-    <string>리자이즈</string>
+    <string>리사이즈</string>
+   </property>
+   <property name="toolTip">
+    <string>리사이즈</string>
    </property>
   </action>
   <action name="actionSave">
@@ -160,6 +163,18 @@
    </property>
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="actionText">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resource/icons.qrc">
+     <normaloff>:/resource/text.svg</normaloff>:/resource/text.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Text</string>
    </property>
   </action>
  </widget>

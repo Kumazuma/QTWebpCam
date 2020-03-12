@@ -6,5 +6,6 @@
         <file>save.svg</file>
         <file>crop.svg</file>
         <file>dot.svg</file>
+        <file>text.svg</file>
     </qresource>
 </RCC>

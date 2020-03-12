@@ -5,9 +5,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 DEPENDPATH += $$PWD/libwebp-msw-x64
-LIBS += -L$$PWD/libwebp-msw-x64/ libwebpmux
-LIBS += -L$$PWD/libwebp-msw-x64/ libwebpdemux
-LIBS += -L$$PWD/libwebp-msw-x64/ libwebp
+LIBS += -L$$PWD/libwebp-msw-x64/ -lwebpmux
+LIBS += -L$$PWD/libwebp-msw-x64/ -lwebpdemux
+LIBS += -L$$PWD/libwebp-msw-x64/ -lwebp
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -23,6 +23,7 @@ SOURCES += \
     edit/editcropcommand.cpp \
     edit/editdeletecommand.cpp \
     edit/editrenderwidget.cpp \
+    edit/edittextcommand.cpp \
     fileimagestore.cpp \
     foreachthread.cpp \
     imageframe.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     edit/editcropcommand.h \
     edit/editdeletecommand.h \
     edit/editrenderwidget.h \
+    edit/edittextcommand.h \
     fileimagestore.h \
     foreachthread.h \
     imageframe.h \
